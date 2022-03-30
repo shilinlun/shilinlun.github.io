@@ -20,10 +20,11 @@
   </entry>
   <entry>
     <title>redis数据结构</title>
-    <url>/posts/3331102394.html</url>
-    <content><![CDATA[<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1>]]></content>
+    <url>/posts/2882215823.html</url>
+    <content><![CDATA[<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p>本次首先对Redis的相关数据结构进行介绍</p>
+]]></content>
       <categories>
-        <category>Redis</category>
+        <category>后端开发</category>
       </categories>
       <tags>
         <tag>导航</tag>

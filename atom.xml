@@ -6,7 +6,7 @@
   <link href="http://www.shicoder.top/atom.xml" rel="self"/>
   
   <link href="http://www.shicoder.top/"/>
-  <updated>2022-03-30T09:13:45.688Z</updated>
+  <updated>2022-03-30T09:16:40.336Z</updated>
   <id>http://www.shicoder.top/</id>
   
   <author>
@@ -18,22 +18,23 @@
   
   <entry>
     <title>redis数据结构</title>
-    <link href="http://www.shicoder.top/posts/3331102394.html"/>
-    <id>http://www.shicoder.top/posts/3331102394.html</id>
-    <published>2022-03-30T09:07:53.806Z</published>
-    <updated>2022-03-30T09:13:45.688Z</updated>
+    <link href="http://www.shicoder.top/posts/2882215823.html"/>
+    <id>http://www.shicoder.top/posts/2882215823.html</id>
+    <published>2022-03-30T09:15:18.000Z</published>
+    <updated>2022-03-30T09:16:40.336Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1>]]></content>
+    <content type="html"><![CDATA[<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p>本次首先对Redis的相关数据结构进行介绍</p>]]></content>
     
     
       
       
-    <summary type="html">&lt;h1 id=&quot;数据结构&quot;&gt;&lt;a href=&quot;#数据结构&quot; class=&quot;headerlink&quot; title=&quot;数据结构&quot;&gt;&lt;/a&gt;数据结构&lt;/h1&gt;</summary>
+    <summary type="html">&lt;h1 id=&quot;数据结构&quot;&gt;&lt;a href=&quot;#数据结构&quot; class=&quot;headerlink&quot; title=&quot;数据结构&quot;&gt;&lt;/a&gt;数据结构&lt;/h1&gt;&lt;p&gt;本次首先对Redis的相关数据结构进行介绍&lt;/p&gt;
+</summary>
       
     
     
     
-    <category term="Redis" scheme="http://www.shicoder.top/categories/Redis/"/>
+    <category term="后端开发" scheme="http://www.shicoder.top/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/"/>
     
     
     <category term="导航" scheme="http://www.shicoder.top/tags/%E5%AF%BC%E8%88%AA/"/>
