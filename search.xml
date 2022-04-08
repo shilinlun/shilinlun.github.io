@@ -19,6 +19,11 @@
       </tags>
   </entry>
   <entry>
+    <title>redis数据结构附录</title>
+    <url>/posts/968120137.html</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title>redis数据结构</title>
     <url>/posts/2882215823.html</url>
     <content><![CDATA[<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0</p>
@@ -84,8 +89,8 @@
 <h2 id="压缩列表-ziplist"><a href="#压缩列表-ziplist" class="headerlink" title="压缩列表 ziplist"></a>压缩列表 <code>ziplist</code></h2><p>压缩列表其实就是一块连续内存，一个压缩列表包括多个节点（entry），每个entry保存一个字节数组或者整数值。在redis源码中， 压缩列表没有数据结构代码定义，压缩列表是一种通过内存特殊编码方式实现的数据结构。他是通过定义一些基地址，然后使用偏移量来定义ziplist，其中大量使用了宏函数定义</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * ziplist 属性宏</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// 定位到 ziplist 的 bytes 属性，该属性记录了整个 ziplist 所占用的内存字节数</span></span><br><span class="line"><span class="comment">// 用于取出 bytes 属性的现有值，或者为 bytes 属性赋予新值</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ZIPLIST_BYTES(zl)       (*((uint32_t*)(zl)))</span></span><br><span class="line"><span class="comment">// 定位到 ziplist 的 offset 属性，该属性记录了到达表尾节点的偏移量</span></span><br><span class="line"><span class="comment">// 用于取出 offset 属性的现有值，或者为 offset 属性赋予新值</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ZIPLIST_TAIL_OFFSET(zl) (*((uint32_t*)((zl)+sizeof(uint32_t))))</span></span><br><span class="line"><span class="comment">// 定位到 ziplist 的 length 属性，该属性记录了 ziplist 包含的节点数量</span></span><br><span class="line"><span class="comment">// 用于取出 length 属性的现有值，或者为 length 属性赋予新值</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ZIPLIST_LENGTH(zl)      (*((uint16_t*)((zl)+sizeof(uint32_t)*2)))</span></span><br><span class="line"><span class="comment">// 返回 ziplist 表头的大小</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ZIPLIST_HEADER_SIZE     (sizeof(uint32_t)*2+sizeof(uint16_t))</span></span><br><span class="line"><span class="comment">// 返回指向 ziplist 第一个节点（的起始位置）的指针</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ZIPLIST_ENTRY_HEAD(zl)  ((zl)+ZIPLIST_HEADER_SIZE)</span></span><br><span class="line"><span class="comment">// 返回指向 ziplist 最后一个节点（的起始位置）的指针</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ZIPLIST_ENTRY_TAIL(zl)  ((zl)+intrev32ifbe(ZIPLIST_TAIL_OFFSET(zl)))</span></span><br><span class="line"><span class="comment">// 返回指向 ziplist 末端 ZIP_END （的起始位置）的指针</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ZIPLIST_ENTRY_END(zl)   ((zl)+intrev32ifbe(ZIPLIST_BYTES(zl))-1)</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649401630127.png" alt="1649401630127"></p>
-<p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649401787641.png" alt="1649401787641"></p>
+<p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649401630127.png" alt="1649401630127"></p>
+<p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649401787641.png" alt="1649401787641"></p>
 <p>其中，redis对entry使用了数据结构描述，如下代码<code>ziplist.c/zlentry</code></p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 保存 ziplist 节点信息的结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">zlentry</span> &#123;</span><br><span class="line">    <span class="comment">// prevrawlen ：前置节点的长度</span></span><br><span class="line">    <span class="comment">// prevrawlensize ：编码 prevrawlen 所需的字节大小</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span> prevrawlensize, prevrawlen;</span><br><span class="line">    <span class="comment">// len ：当前节点值的长度</span></span><br><span class="line">    <span class="comment">// lensize ：编码 len 所需的字节大小</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span> lensize, len;</span><br><span class="line">    <span class="comment">// 当前节点 header 的大小</span></span><br><span class="line">    <span class="comment">// 等于 prevrawlensize + lensize</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span> headersize;</span><br><span class="line">    <span class="comment">// 当前节点值所使用的编码类型</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> encoding;</span><br><span class="line">    <span class="comment">// 指向当前节点的指针</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> *p;</span><br><span class="line">&#125; zlentry;</span><br></pre></td></tr></table></figure>
 
@@ -97,7 +102,8 @@
 <p>由于压缩列表主要就是为了节约内存，因此对于不同的数据，其编码方式不一样，前面我们已经知道，entry中主要放字节数组和整数，下表给出两种数据不同长度时候的编码</p>
 <div>            <!--块级封装-->
     <center>    <!--将图片和文字居中-->
-    <img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649402330810.png"
+    <img src="
+https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402330810.png"
          alt="无法显示图片时显示的文字"
          style="zoom:这里写图片的缩放百分比"/>
     <br>        <!--换行-->
@@ -107,7 +113,8 @@
 
 <div>            <!--块级封装-->
     <center>    <!--将图片和文字居中-->
-    <img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649402910210.png"
+    <img src="
+https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
          alt="无法显示图片时显示的文字"
          style="zoom:这里写图片的缩放百分比"/>
     <br>        <!--换行-->
@@ -164,29 +171,29 @@
 
 <p>上述两个宏定义分别与redis的配置文件中<code>list-max-ziplist-entries</code>和<code>list-max-ziplist-value</code>对应</p>
 <h2 id="REDIS-HASH"><a href="#REDIS-HASH" class="headerlink" title="REDIS_HASH"></a>REDIS_HASH</h2><p>哈希对象主要有2种编码方式，<code>REDIS_ENCODING_ZIPLIST</code>和<code>REDIS_ENCODING_HT</code></p>
-<h3 id="REDIS-ENCODING-ZIPLIST-1"><a href="#REDIS-ENCODING-ZIPLIST-1" class="headerlink" title="REDIS_ENCODING_ZIPLIST"></a>REDIS_ENCODING_ZIPLIST</h3><p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649403963758.png" alt="1649403963758"></p>
+<h3 id="REDIS-ENCODING-ZIPLIST-1"><a href="#REDIS-ENCODING-ZIPLIST-1" class="headerlink" title="REDIS_ENCODING_ZIPLIST"></a>REDIS_ENCODING_ZIPLIST</h3><p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649403963758.png" alt="1649403963758"></p>
 <p>ziplist作为底层实现，先放入键，后放入值</p>
-<h3 id="REDIS-ENCODING-HT"><a href="#REDIS-ENCODING-HT" class="headerlink" title="REDIS_ENCODING_HT"></a>REDIS_ENCODING_HT</h3><p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649404264852.png" alt="1649404264852"></p>
+<h3 id="REDIS-ENCODING-HT"><a href="#REDIS-ENCODING-HT" class="headerlink" title="REDIS_ENCODING_HT"></a>REDIS_ENCODING_HT</h3><p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649404264852.png" alt="1649404264852"></p>
 <h3 id="编码转换-1"><a href="#编码转换-1" class="headerlink" title="编码转换"></a>编码转换</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> REDIS_HASH_MAX_ZIPLIST_ENTRIES 512 <span class="comment">//哈希对象保存的键值对数量小于512个，使用ziplist;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> REDIS_HASH_MAX_ZIPLIST_VALUE 64 <span class="comment">//哈希对象保存的所有键值对的键和值的字符串长度都小于64字节,使用ziplist;</span></span></span><br></pre></td></tr></table></figure>
 
 <p>上述两个宏定义分别与redis的配置文件中<code>hash-max-ziplist-entries</code>和<code>hash-max-ziplist-value</code>对应</p>
 <h2 id="REDIS-SET"><a href="#REDIS-SET" class="headerlink" title="REDIS_SET"></a>REDIS_SET</h2><p>集合的底层编码方式也是两种：<code>REDIS_ENCODING_INTSET</code>和<code>REDIS_ENCODING_HT</code></p>
 <h3 id="REDIS-ENCODING-INTSET"><a href="#REDIS-ENCODING-INTSET" class="headerlink" title="REDIS_ENCODING_INTSET"></a>REDIS_ENCODING_INTSET</h3><p>使用该编码方式作为集合的底层实现时候，一般是整数集合，比如</p>
-<p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649404584469.png" alt="1649404584469"></p>
+<p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649404584469.png" alt="1649404584469"></p>
 <h3 id="REDIS-ENCODING-HT-1"><a href="#REDIS-ENCODING-HT-1" class="headerlink" title="REDIS_ENCODING_HT"></a>REDIS_ENCODING_HT</h3><p>使用哈希表作为集合的底层实现方式时，所有的值作为键，但对应的值为null</p>
-<p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649404635934.png" alt="1649404635934"></p>
+<p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649404635934.png" alt="1649404635934"></p>
 <h3 id="编码转换-2"><a href="#编码转换-2" class="headerlink" title="编码转换"></a>编码转换</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> REDIS_SET_MAX_INTSET_ENTRIES 512 <span class="comment">/*集合中元素个数小于该值，且全为整数，set底层使用intset*/</span></span></span><br></pre></td></tr></table></figure>
 
 <p>对应的redis配置文件选项为<code>set-max-intset-entries</code></p>
 <h2 id="REDIS-ZSET"><a href="#REDIS-ZSET" class="headerlink" title="REDIS_ZSET"></a>REDIS_ZSET</h2><p>有序集合底层实现为：<code>REDIS_ENCODING_ZIPLIST</code>和<code>REDIS_ENCODING_SKIPLIST</code></p>
 <h3 id="REDIS-ENCODING-ZIPLIST-2"><a href="#REDIS-ENCODING-ZIPLIST-2" class="headerlink" title="REDIS_ENCODING_ZIPLIST"></a>REDIS_ENCODING_ZIPLIST</h3><p>当使用压缩列表作为有序集合的底层实现时候，压缩列表的entry有2个值，一个是值，一个是得分，同时按照得分由小到大进行排列</p>
-<p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649404859400.png" alt="1649404859400"></p>
+<p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649404859400.png" alt="1649404859400"></p>
 <h3 id="REDIS-ENCODING-SKIPLIST"><a href="#REDIS-ENCODING-SKIPLIST" class="headerlink" title="REDIS_ENCODING_SKIPLIST"></a>REDIS_ENCODING_SKIPLIST</h3><p>当使用跳跃表进行底层实现时候，一个有序集合同时包括：</p>
 <ul>
 <li>一个跳跃表</li>
 <li>一个字典</li>
 </ul>
-<p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649404927877.png" alt="1649404927877"></p>
+<p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649404927877.png" alt="1649404927877"></p>
 <blockquote>
 <p>为什么有序集合需要同时使用跳跃表和字典来实现?</p>
 <p>在理论上，有序集合可以单独使用字典或者跳跃表的其中一种数据结构来实现，但无论单独使用字典还是跳跃表，在性能上对比起同时使用字典和跳跃表都会有所降低。举个例子，如果我们只使用字典来实现有序集合，那么虽然以O(1)复杂度查找成员的分值这一特性会被保留，但是，因为字典以无序的方式来保存集合元素，所以每次在执行范围型操作——比如ZRANK、ZRANGE等命令时，程序都需要对字典保存的所有元素进行排序，完成这种排序需要至少O(NlogN)时间复杂度，以及额外的O(N)内存空间（因为要创建一个数组来保存排序后的元素)。</p>

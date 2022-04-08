@@ -11,6 +11,15 @@
   </url>
   
   <url>
+    <loc>http://www.shicoder.top/posts/968120137.html</loc>
+    
+    <lastmod>2022-04-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://www.shicoder.top/posts/335272509.html</loc>
     
     <lastmod>2022-03-31</lastmod>
@@ -115,14 +124,14 @@
   </url>
   
   <url>
-    <loc>http://www.shicoder.top/categories/%E6%97%A5%E8%AE%B0%E6%9D%82%E4%BA%8B/</loc>
+    <loc>http://www.shicoder.top/categories/redis/</loc>
     <lastmod>2022-04-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://www.shicoder.top/categories/redis/</loc>
+    <loc>http://www.shicoder.top/categories/%E6%97%A5%E8%AE%B0%E6%9D%82%E4%BA%8B/</loc>
     <lastmod>2022-04-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
