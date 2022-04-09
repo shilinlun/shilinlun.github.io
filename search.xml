@@ -21,7 +21,28 @@
   <entry>
     <title>redis数据结构附录</title>
     <url>/posts/968120137.html</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本次对上一次的数据结构知识进行补充，主要有redis数据结构的相关应用场景和内存相关知识</p>
+<h1 id="引用计数-内存"><a href="#引用计数-内存" class="headerlink" title="引用计数-内存"></a>引用计数-内存</h1><p>redis中的对象回收机制是采用引用计数的方式，首先我们可以通过redis对象结构体代码可知</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Redis 对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">redisObject</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 引用计数</span></span><br><span class="line">    <span class="type">int</span> refcount;</span><br><span class="line">	...</span><br><span class="line">&#125; robj;</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\shi\AppData\Roaming\Typora\typora-user-images\1649488845659.png" alt="1649488845659"></p>
+<p>上面表格是和引用计数字段相关的api</p>
+<h1 id="引用计数-共享"><a href="#引用计数-共享" class="headerlink" title="引用计数-共享"></a>引用计数-共享</h1><p>我们知道引用计数可以实现对象内存什么时候销毁，那么引用计数也可以用来对象共享</p>
+<p>比如此时有一个对象A，值为10，新建了一个对象B，值和类型都与A一样，则可以让他们指向同一个地址，然后引用计数+1</p>
+<p>注意：redis初始化时候，会自动创建10000个字符串对象，包括0-9999这10000个整数，当服务器要用到这些数字的字符串对象时候，redis就不需要重新创建。（可以修改<code>redis.h/REDIS_SHARED_INTEGERS</code>进行修改）</p>
+<blockquote>
+<p>redis&gt; set A 100<br>OK</p>
+<p>redis&gt; OBJECT REFCOUNT A<br>(integer) 2</p>
+</blockquote>
+<h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><p>redis由于有多种数据结构，每种数据结构都有着不同的api和对应的时间复杂度，因此在实际工作或者项目开发中，应该面对不同场景选择不同的redis数据结构，因为自己在字节工作，会常常使用redis，下面根据自己平时的一些总结进行阐述，这个部分会持续更新</p>
+]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>导航</tag>
+        <tag>分享</tag>
+      </tags>
   </entry>
   <entry>
     <title>redis数据结构</title>
