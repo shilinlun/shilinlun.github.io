@@ -19,6 +19,21 @@
       </tags>
   </entry>
   <entry>
+    <title>redis持久化</title>
+    <url>/posts/3707414788.html</url>
+    <content><![CDATA[<p>本次主要是对redis中著名的持久化策略进行代码层面描述，主要包括RDB持久化和AOF持久化</p>
+<span id="more"></span>
+
+<h1 id="RDB持久化"><a href="#RDB持久化" class="headerlink" title="RDB持久化"></a>RDB持久化</h1>]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>导航</tag>
+        <tag>分享</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>redis数据库</title>
     <url>/posts/641130346.html</url>
     <content><![CDATA[<p>这一次主要是接着redis服务器接着进行代码讲解，因为redis服务器中包含大量的数据库，因为redis也对每个数据库设计了结构体</p>
