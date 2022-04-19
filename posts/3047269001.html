@@ -104,7 +104,7 @@
 <meta property="og:description" content="这次我们主要来说说muduo库中大量使用的回调机制。muduo主要使用的是利用Callback的方式来实现回调，首先我们在自己的EchoServer构造函数中有这样几行代码">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-02-20T07:43:39.000Z">
-<meta property="article:modified_time" content="2022-02-24T07:00:37.906Z">
+<meta property="article:modified_time" content="2022-04-19T02:55:10.624Z">
 <meta property="article:author" content="shilinkun">
 <meta property="article:tag" content="导航">
 <meta property="article:tag" content="分享">
@@ -404,7 +404,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  470
+                  485
                 </span>
               
 
@@ -453,6 +453,9 @@
 <p>当已经建立的连接有新消息来的时候，<code>conn-&gt;setMessageCallback(messageCallback_);</code>这一行代码表示我们给这个<code>conn</code>设置了一个有消息来的时候回调，我们去看下<code>TcpConnection</code>中对<code>setMessageCallback</code>是怎么处理的</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">setConnectionCallback</span><span class="params">(<span class="type">const</span> ConnectionCallback&amp; cb)</span></span></span><br><span class="line"><span class="function"></span>&#123; connectionCallback_ = cb; &#125;</span><br></pre></td></tr></table></figure>
 <p>所以有消息来的时候，就会执行我们所设置的回调函数<code>onMessage</code>。到这里我么就基本知道新连接的建立和旧连接的消息到来应该做什么，下一章我们说一下消息之间发送的<code>Buffer</code>类。</p>
+<blockquote>
+<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
+</blockquote>
 
       
     </div>
@@ -669,7 +672,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
