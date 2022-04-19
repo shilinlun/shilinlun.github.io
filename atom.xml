@@ -6,7 +6,7 @@
   <link href="http://www.shicoder.top/atom.xml" rel="self"/>
   
   <link href="http://www.shicoder.top/"/>
-  <updated>2022-04-16T07:10:43.081Z</updated>
+  <updated>2022-04-19T03:10:07.988Z</updated>
   <id>http://www.shicoder.top/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="http://www.shicoder.top/posts/1523335757.html"/>
     <id>http://www.shicoder.top/posts/1523335757.html</id>
     <published>2022-04-16T07:08:51.000Z</published>
-    <updated>2022-04-16T07:10:43.081Z</updated>
+    <updated>2022-04-19T03:10:07.988Z</updated>
     
     <content type="html"><![CDATA[<p>这次主要是从go语言方面对如何使用redis进行代码讲解，也是目前redis相关文章的最后一次，但后续会在学习中对这些文章进行更新</p><span id="more"></span>]]></content>
     
