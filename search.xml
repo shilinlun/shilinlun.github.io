@@ -22,6 +22,260 @@
       </tags>
   </entry>
   <entry>
+    <title>操作系统实现-startbooting</title>
+    <url>/posts/3107354293.html</url>
+    <content><![CDATA[<p>这一次我们进入操作系统实现的真实编码， 首先我们都知道操作系统开机之后，都会进入boot，那我们就打印一句话把</p>
+<span id="more"></span>
+
+<h1 id="实模式下的print"><a href="#实模式下的print" class="headerlink" title="实模式下的print"></a>实模式下的print</h1><p>在我们平时编写c语言时候，可以直接使用</p>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>导航</tag>
+        <tag>分享</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>操作系统实现-boot.asm</title>
+    <url>/posts/2733103160.html</url>
+    <content><![CDATA[<p>这次对上次的boot.asm进行代码讲解，也可以对汇编的相关理论进行补充</p>
+<span id="more"></span>
+
+<h1 id="boot-asm"><a href="#boot-asm" class="headerlink" title="boot.asm"></a><code>boot.asm</code></h1><p>主引导扇区位于硬盘的0柱面0磁头1扇区处，首先BIOS加电后，就会将主引导程序加载进来，然后执行</p>
+<p>我们先看下boot.asm中有啥把</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[org 0x7c00]</span><br><span class="line"></span><br><span class="line">; 设置屏幕模式为文本模式，清除屏幕</span><br><span class="line">mov ax, 3</span><br><span class="line">int 0x10</span><br><span class="line"></span><br><span class="line">; 初始化段寄存器</span><br><span class="line">mov ax, 0</span><br><span class="line">mov ds, ax</span><br><span class="line">mov es, ax</span><br><span class="line">mov ss, ax</span><br><span class="line">mov sp, 0x7c00</span><br><span class="line"></span><br><span class="line">; 0xb8000 文本显示器的内存区域</span><br><span class="line">mov ax, 0xb800</span><br><span class="line">mov ds, ax</span><br><span class="line">mov byte [0], &#x27;H&#x27;</span><br><span class="line"></span><br><span class="line">; 阻塞</span><br><span class="line">jmp $</span><br><span class="line"></span><br><span class="line">; 填充 0</span><br><span class="line">times 510 - ($ - $$) db 0</span><br><span class="line"></span><br><span class="line">; 主引导扇区的最后两个字节必须是 0x55 0xaa</span><br><span class="line">; dw 0xaa55</span><br><span class="line">db 0x55, 0xaa</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>0x7c00</li>
+</ul>
+<p>因为bios在上电之后，会去将boot主引导程序加载到0x7c00，然后利用一个跳转，跳到0x7c00处执行，因此我们需要将boot.asm代码放在0x7c00处，org便是这个功能</p>
+<ul>
+<li>设置屏幕为文本模式</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mov ax, 3</span><br><span class="line">int 0x10</span><br></pre></td></tr></table></figure>
+
+<p>int 0x10为bios中断服务，给定不同的ax，会进行不同的调用程序，下表给出ax&#x3D;3时候的程序</p>
+<table>
+<thead>
+<tr>
+<th>AL</th>
+<th>文字&#x2F;图形</th>
+<th>分表率</th>
+<th>颜色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>00</td>
+<td>文字</td>
+<td>40*25</td>
+<td>2</td>
+</tr>
+<tr>
+<td>01</td>
+<td>文字</td>
+<td>40*25</td>
+<td>16</td>
+</tr>
+<tr>
+<td>02</td>
+<td>文字</td>
+<td>80*25</td>
+<td>2</td>
+</tr>
+<tr>
+<td>03</td>
+<td>文字</td>
+<td>80*25</td>
+<td>16</td>
+</tr>
+<tr>
+<td>04</td>
+<td>图形</td>
+<td>320*320</td>
+<td>2</td>
+</tr>
+<tr>
+<td>05</td>
+<td>图形</td>
+<td>320*320</td>
+<td>4</td>
+</tr>
+<tr>
+<td>06</td>
+<td>图形</td>
+<td>640*200</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<ul>
+<li>初始化段寄存器</li>
+</ul>
+<p>因为不能使用<code>mov ds,0</code>这种，因此借助<code>ax</code>进行初始化</p>
+<ul>
+<li>显示文本</li>
+</ul>
+<p>由于BIOS加载之后，还是实模式，为了在这个模式下显示文本，我们需要知道要在哪个内存区域进行显示，下面给出实模式下的内存区域</p>
+<table>
+<thead>
+<tr>
+<th>起始地址</th>
+<th>结束地址</th>
+<th>大小</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0x000</code></td>
+<td><code>0x3FF</code></td>
+<td>1KB</td>
+<td>中断向量表</td>
+</tr>
+<tr>
+<td><code>0x400</code></td>
+<td><code>0x4FF</code></td>
+<td>256B</td>
+<td>BIOS 数据区</td>
+</tr>
+<tr>
+<td><code>0x500</code></td>
+<td><code>0x7BFF</code></td>
+<td>29.75 KB</td>
+<td>可用区域</td>
+</tr>
+<tr>
+<td><code>0x7C00</code></td>
+<td><code>0x7DFF</code></td>
+<td>512B</td>
+<td>MBR 加载区域</td>
+</tr>
+<tr>
+<td><code>0x7E00</code></td>
+<td><code>0x9FBFF</code></td>
+<td>607.6KB</td>
+<td>可用区域</td>
+</tr>
+<tr>
+<td><code>0x9FC00</code></td>
+<td><code>0x9FFFF</code></td>
+<td>1KB</td>
+<td>扩展 BIOS 数据区</td>
+</tr>
+<tr>
+<td><code>0xA0000</code></td>
+<td><code>0xAFFFF</code></td>
+<td>64KB</td>
+<td>用于彩色显示适配器</td>
+</tr>
+<tr>
+<td><code>0xB0000</code></td>
+<td><code>0xB7FFF</code></td>
+<td>32KB</td>
+<td>用于黑白显示适配器</td>
+</tr>
+<tr>
+<td><code>0xB8000</code></td>
+<td><code>0xBFFFF</code></td>
+<td>32KB</td>
+<td>用于文本显示适配器</td>
+</tr>
+<tr>
+<td><code>0xC0000</code></td>
+<td><code>0xC7FFF</code></td>
+<td>32KB</td>
+<td>显示适配器 BIOS</td>
+</tr>
+<tr>
+<td><code>0xC8000</code></td>
+<td><code>0xEFFFF</code></td>
+<td>160KB</td>
+<td>映射内存</td>
+</tr>
+<tr>
+<td><code>0xF0000</code></td>
+<td><code>0xFFFEF</code></td>
+<td>64KB-16B</td>
+<td>系统 BIOS</td>
+</tr>
+<tr>
+<td><code>0xFFFF0</code></td>
+<td><code>0xFFFFF</code></td>
+<td>16B</td>
+<td>系统 BIOS 入口地址</td>
+</tr>
+</tbody></table>
+<p>可以看出在0xb8000处可以显示文本，因此</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mov ax, 0xb800</span><br><span class="line">mov ds, ax</span><br><span class="line">mov byte [0], &#x27;H&#x27;</span><br><span class="line">相当于是 move byte ds:[0], &#x27;H&#x27;</span><br><span class="line">实模式下寻址方式为</span><br><span class="line">( 16 位段基址 &lt;&lt; 4 ) + 16 位偏移地址</span><br><span class="line">ds &lt;&lt; 4 + 0 = 0xb8000</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>0x55aa</li>
+</ul>
+<p>若一段程序结束的魔数为0x55aa，BIOS才会认为是合格的主引导程序</p>
+<blockquote>
+<p>注意，在汇编代码中，若定义一个数字 ，左边是高位</p>
+<p>比如  dw 0xaa55，则编译之后，aa在高位</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>导航</tag>
+        <tag>分享</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>操作系统实现-开发环境配置</title>
+    <url>/posts/543605244.html</url>
+    <content><![CDATA[<p>这一次我们开始自己实现一个简单的操作系统，当然自己也是在看别人的视频进行学习，希望自己能从这个实验中学习到操作系统相关的知识</p>
+<span id="more"></span>
+
+<h1 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h1><h1 id="环境配置-1"><a href="#环境配置-1" class="headerlink" title="环境配置"></a>环境配置</h1><ul>
+<li>VMware</li>
+<li>ArchLinux</li>
+<li>VSCode</li>
+<li>nasm</li>
+<li>bochs</li>
+<li>qemu</li>
+<li>gdb</li>
+</ul>
+<h1 id="VSCode远程连接"><a href="#VSCode远程连接" class="headerlink" title="VSCode远程连接"></a>VSCode远程连接</h1><p>这个步骤就大家自行百度下把</p>
+<h1 id="boot-asm"><a href="#boot-asm" class="headerlink" title="boot.asm"></a>boot.asm</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[org 0x7c00]</span><br><span class="line"></span><br><span class="line">; 设置屏幕模式为文本模式，清除屏幕</span><br><span class="line">mov ax, 3</span><br><span class="line">int 0x10</span><br><span class="line"></span><br><span class="line">; 初始化段寄存器</span><br><span class="line">mov ax, 0</span><br><span class="line">mov ds, ax</span><br><span class="line">mov es, ax</span><br><span class="line">mov ss, ax</span><br><span class="line">mov sp, 0x7c00</span><br><span class="line"></span><br><span class="line">; 0xb8000 文本显示器的内存区域</span><br><span class="line">mov ax, 0xb800</span><br><span class="line">mov ds, ax</span><br><span class="line">mov byte [0], &#x27;H&#x27;</span><br><span class="line"></span><br><span class="line">; 阻塞</span><br><span class="line">jmp $</span><br><span class="line"></span><br><span class="line">; 填充 0</span><br><span class="line">times 510 - ($ - $$) db 0</span><br><span class="line"></span><br><span class="line">; 主引导扇区的最后两个字节必须是 0x55 0xaa</span><br><span class="line">; dw 0xaa55</span><br><span class="line">db 0x55, 0xaa</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编译</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nasm -f bin boot.asm boot.bin</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建硬盘镜像</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bximage -q -hd=16 -func=create -sectsize=512 -imgmode=flat master.img</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>配置bochsrc</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta"># </span><span class="language-bash">configuration file generated by Bochs</span></span><br><span class="line">plugin_ctrl: unmapped=true, biosdev=true, speaker=true, extfpuirq=true, parallel=true, serial=true, iodebug=true, pcidev=false, usb_uhci=false</span><br><span class="line">config_interface: textconfig</span><br><span class="line">display_library: x,options=&quot;gui_debug&quot;</span><br><span class="line">memory: host=32, guest=32</span><br><span class="line">romimage: file=&quot;/usr/share/bochs/BIOS-bochs-latest&quot;, address=0x00000000, options=none</span><br><span class="line">vgaromimage: file=&quot;/usr/share/bochs/VGABIOS-lgpl-latest&quot;</span><br><span class="line">boot: disk</span><br><span class="line">floppy_bootsig_check: disabled=0</span><br><span class="line">floppya: type=1_44</span><br><span class="line"><span class="meta"># </span><span class="language-bash">no floppyb</span></span><br><span class="line">ata0: enabled=true, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14</span><br><span class="line">ata0-master: type=disk, path=&quot;../build/master.img&quot;, mode=flat</span><br><span class="line">ata0-slave: type=none</span><br><span class="line">ata1: enabled=true, ioaddr1=0x170, ioaddr2=0x370, irq=15</span><br><span class="line">ata1-master: type=none</span><br><span class="line">ata1-slave: type=none</span><br><span class="line">ata2: enabled=false</span><br><span class="line">ata3: enabled=false</span><br><span class="line">optromimage1: file=none</span><br><span class="line">optromimage2: file=none</span><br><span class="line">optromimage3: file=none</span><br><span class="line">optromimage4: file=none</span><br><span class="line">optramimage1: file=none</span><br><span class="line">optramimage2: file=none</span><br><span class="line">optramimage3: file=none</span><br><span class="line">optramimage4: file=none</span><br><span class="line">pci: enabled=1, chipset=i440fx, slot1=none, slot2=none, slot3=none, slot4=none, slot5=none</span><br><span class="line">vga: extension=vbe, update_freq=5, realtime=1, ddc=builtin</span><br><span class="line">cpu: count=1:1:1, ips=4000000, quantum=16, model=bx_generic, reset_on_triple_fault=1, cpuid_limit_winnt=0, ignore_bad_msrs=1, mwait_is_nop=0</span><br><span class="line">cpuid: level=6, stepping=3, model=3, family=6, vendor_string=&quot;AuthenticAMD&quot;, brand_string=&quot;AMD Athlon(tm) processor&quot;</span><br><span class="line">cpuid: mmx=true, apic=xapic, simd=sse2, sse4a=false, misaligned_sse=false, sep=true</span><br><span class="line">cpuid: movbe=false, adx=false, aes=false, sha=false, xsave=false, xsaveopt=false, avx_f16c=false</span><br><span class="line">cpuid: avx_fma=false, bmi=0, xop=false, fma4=false, tbm=false, x86_64=true, 1g_pages=false</span><br><span class="line">cpuid: pcid=false, fsgsbase=false, smep=false, smap=false, mwait=true</span><br><span class="line">print_timestamps: enabled=0</span><br><span class="line">debugger_log: -</span><br><span class="line">magic_break: enabled=1</span><br><span class="line">port_e9_hack: enabled=0</span><br><span class="line">private_colormap: enabled=0</span><br><span class="line">clock: sync=none, time0=local, rtc_sync=0</span><br><span class="line"><span class="meta"># </span><span class="language-bash">no cmosimage</span></span><br><span class="line">log: -</span><br><span class="line">logprefix: %t%e%d</span><br><span class="line">debug: action=ignore</span><br><span class="line">info: action=report</span><br><span class="line">error: action=report</span><br><span class="line">panic: action=ask</span><br><span class="line">keyboard: type=mf, serial_delay=250, paste_delay=100000, user_shortcut=none</span><br><span class="line">mouse: type=ps2, enabled=false, toggle=ctrl+mbutton</span><br><span class="line">speaker: enabled=true, mode=system</span><br><span class="line">parport1: enabled=true, file=none</span><br><span class="line">parport2: enabled=false</span><br><span class="line">com1: enabled=true, mode=null</span><br><span class="line">com2: enabled=false</span><br><span class="line">com3: enabled=false</span><br><span class="line">com4: enabled=false</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将boot.bin写入到主引导扇区</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">dd if=boot.bin of=master.img bs=512 count=1 conv=notrunc</span><br></pre></td></tr></table></figure>
+
+<h1 id="bochs中运行"><a href="#bochs中运行" class="headerlink" title="bochs中运行"></a>bochs中运行</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bochs -q -f bochsrc</span><br></pre></td></tr></table></figure>
+
+<p>若bochs中显示出一个<code>H</code>，则表明配置环境成功，下一节，我们将对刚刚那个<code>boot.asm</code>进行代码讲解</p>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>导航</tag>
+        <tag>分享</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>集群聊天服务器六</title>
     <url>/posts/2449255119.html</url>
     <content><![CDATA[<p>对于前面单台服务器而言，几千的客户端压力基本没有什么影响，但当客户端达到上万的时候，就可能会遇到一些问题，因此我准备采用<code>nginx+redis</code>的方式进行负载均衡，主要思路如下：</p>
@@ -279,21 +533,6 @@
       <tags>
         <tag>导航</tag>
         <tag>分类</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>go-redis应用</title>
-    <url>/posts/1523335757.html</url>
-    <content><![CDATA[<p>这次主要是从go语言方面对如何使用redis进行代码讲解，也是目前redis相关文章的最后一次，但后续会在学习中对这些文章进行更新</p>
-<span id="more"></span>
-
-]]></content>
-      <categories>
-        <category>redis</category>
-      </categories>
-      <tags>
-        <tag>导航</tag>
-        <tag>分享</tag>
       </tags>
   </entry>
   <entry>

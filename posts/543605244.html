@@ -96,15 +96,15 @@
 
 
 
-<meta name="description" content="这次主要是从go语言方面对如何使用redis进行代码讲解，也是目前redis相关文章的最后一次，但后续会在学习中对这些文章进行更新">
+<meta name="description" content="这一次我们开始自己实现一个简单的操作系统，当然自己也是在看别人的视频进行学习，希望自己能从这个实验中学习到操作系统相关的知识">
 <meta property="og:type" content="article">
-<meta property="og:title" content="go-redis应用">
-<meta property="og:url" content="http://www.shicoder.top/posts/1523335757.html">
+<meta property="og:title" content="操作系统实现-开发环境配置">
+<meta property="og:url" content="http://www.shicoder.top/posts/543605244.html">
 <meta property="og:site_name" content="一个爱代码的Coder">
-<meta property="og:description" content="这次主要是从go语言方面对如何使用redis进行代码讲解，也是目前redis相关文章的最后一次，但后续会在学习中对这些文章进行更新">
+<meta property="og:description" content="这一次我们开始自己实现一个简单的操作系统，当然自己也是在看别人的视频进行学习，希望自己能从这个实验中学习到操作系统相关的知识">
 <meta property="og:locale">
-<meta property="article:published_time" content="2022-04-16T07:08:51.000Z">
-<meta property="article:modified_time" content="2022-04-19T03:10:07.988Z">
+<meta property="article:published_time" content="2022-04-24T10:55:13.000Z">
+<meta property="article:modified_time" content="2022-04-24T12:10:22.038Z">
 <meta property="article:author" content="shilinkun">
 <meta property="article:tag" content="导航">
 <meta property="article:tag" content="分享">
@@ -138,13 +138,13 @@
 
 
 
-  <link rel="canonical" href="http://www.shicoder.top/posts/1523335757.html"/>
+  <link rel="canonical" href="http://www.shicoder.top/posts/543605244.html"/>
 
 
 
 
 
-  <title>go-redis应用 | 一个爱代码的Coder</title>
+  <title>操作系统实现-开发环境配置 | 一个爱代码的Coder</title>
   
 
 
@@ -315,7 +315,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.shicoder.top/posts/1523335757.html">
+    <link itemprop="mainEntityOfPage" href="http://www.shicoder.top/posts/543605244.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -332,7 +332,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">go-redis应用</h1>
+          <h1 class="post-title" itemprop="name headline">操作系统实现-开发环境配置</h1>
         
 
         <div class="post-meta">
@@ -345,8 +345,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-16T15:08:51+08:00">
-                2022-04-16
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-24T18:55:13+08:00">
+                2022-04-24
               </time>
             
 
@@ -368,8 +368,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
                   </a>
                 </span>
 
@@ -386,8 +386,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/posts/1523335757.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/posts/1523335757.html" itemprop="commentCount"></span>
+                <a href="/posts/543605244.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/posts/543605244.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -414,7 +414,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  53
+                  577
                 </span>
               
 
@@ -430,7 +430,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  3
                 </span>
               
             </div>
@@ -451,9 +451,44 @@
       
 
       
-        <p>这次主要是从go语言方面对如何使用redis进行代码讲解，也是目前redis相关文章的最后一次，但后续会在学习中对这些文章进行更新</p>
+        <p>这一次我们开始自己实现一个简单的操作系统，当然自己也是在看别人的视频进行学习，希望自己能从这个实验中学习到操作系统相关的知识</p>
 <span id="more"></span>
 
+<h1 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h1><h1 id="环境配置-1"><a href="#环境配置-1" class="headerlink" title="环境配置"></a>环境配置</h1><ul>
+<li>VMware</li>
+<li>ArchLinux</li>
+<li>VSCode</li>
+<li>nasm</li>
+<li>bochs</li>
+<li>qemu</li>
+<li>gdb</li>
+</ul>
+<h1 id="VSCode远程连接"><a href="#VSCode远程连接" class="headerlink" title="VSCode远程连接"></a>VSCode远程连接</h1><p>这个步骤就大家自行百度下把</p>
+<h1 id="boot-asm"><a href="#boot-asm" class="headerlink" title="boot.asm"></a>boot.asm</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[org 0x7c00]</span><br><span class="line"></span><br><span class="line">; 设置屏幕模式为文本模式，清除屏幕</span><br><span class="line">mov ax, 3</span><br><span class="line">int 0x10</span><br><span class="line"></span><br><span class="line">; 初始化段寄存器</span><br><span class="line">mov ax, 0</span><br><span class="line">mov ds, ax</span><br><span class="line">mov es, ax</span><br><span class="line">mov ss, ax</span><br><span class="line">mov sp, 0x7c00</span><br><span class="line"></span><br><span class="line">; 0xb8000 文本显示器的内存区域</span><br><span class="line">mov ax, 0xb800</span><br><span class="line">mov ds, ax</span><br><span class="line">mov byte [0], &#x27;H&#x27;</span><br><span class="line"></span><br><span class="line">; 阻塞</span><br><span class="line">jmp $</span><br><span class="line"></span><br><span class="line">; 填充 0</span><br><span class="line">times 510 - ($ - $$) db 0</span><br><span class="line"></span><br><span class="line">; 主引导扇区的最后两个字节必须是 0x55 0xaa</span><br><span class="line">; dw 0xaa55</span><br><span class="line">db 0x55, 0xaa</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编译</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nasm -f bin boot.asm boot.bin</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建硬盘镜像</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bximage -q -hd=16 -func=create -sectsize=512 -imgmode=flat master.img</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>配置bochsrc</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># </span><span class="language-bash">configuration file generated by Bochs</span></span><br><span class="line">plugin_ctrl: unmapped=true, biosdev=true, speaker=true, extfpuirq=true, parallel=true, serial=true, iodebug=true, pcidev=false, usb_uhci=false</span><br><span class="line">config_interface: textconfig</span><br><span class="line">display_library: x,options=&quot;gui_debug&quot;</span><br><span class="line">memory: host=32, guest=32</span><br><span class="line">romimage: file=&quot;/usr/share/bochs/BIOS-bochs-latest&quot;, address=0x00000000, options=none</span><br><span class="line">vgaromimage: file=&quot;/usr/share/bochs/VGABIOS-lgpl-latest&quot;</span><br><span class="line">boot: disk</span><br><span class="line">floppy_bootsig_check: disabled=0</span><br><span class="line">floppya: type=1_44</span><br><span class="line"><span class="meta"># </span><span class="language-bash">no floppyb</span></span><br><span class="line">ata0: enabled=true, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14</span><br><span class="line">ata0-master: type=disk, path=&quot;../build/master.img&quot;, mode=flat</span><br><span class="line">ata0-slave: type=none</span><br><span class="line">ata1: enabled=true, ioaddr1=0x170, ioaddr2=0x370, irq=15</span><br><span class="line">ata1-master: type=none</span><br><span class="line">ata1-slave: type=none</span><br><span class="line">ata2: enabled=false</span><br><span class="line">ata3: enabled=false</span><br><span class="line">optromimage1: file=none</span><br><span class="line">optromimage2: file=none</span><br><span class="line">optromimage3: file=none</span><br><span class="line">optromimage4: file=none</span><br><span class="line">optramimage1: file=none</span><br><span class="line">optramimage2: file=none</span><br><span class="line">optramimage3: file=none</span><br><span class="line">optramimage4: file=none</span><br><span class="line">pci: enabled=1, chipset=i440fx, slot1=none, slot2=none, slot3=none, slot4=none, slot5=none</span><br><span class="line">vga: extension=vbe, update_freq=5, realtime=1, ddc=builtin</span><br><span class="line">cpu: count=1:1:1, ips=4000000, quantum=16, model=bx_generic, reset_on_triple_fault=1, cpuid_limit_winnt=0, ignore_bad_msrs=1, mwait_is_nop=0</span><br><span class="line">cpuid: level=6, stepping=3, model=3, family=6, vendor_string=&quot;AuthenticAMD&quot;, brand_string=&quot;AMD Athlon(tm) processor&quot;</span><br><span class="line">cpuid: mmx=true, apic=xapic, simd=sse2, sse4a=false, misaligned_sse=false, sep=true</span><br><span class="line">cpuid: movbe=false, adx=false, aes=false, sha=false, xsave=false, xsaveopt=false, avx_f16c=false</span><br><span class="line">cpuid: avx_fma=false, bmi=0, xop=false, fma4=false, tbm=false, x86_64=true, 1g_pages=false</span><br><span class="line">cpuid: pcid=false, fsgsbase=false, smep=false, smap=false, mwait=true</span><br><span class="line">print_timestamps: enabled=0</span><br><span class="line">debugger_log: -</span><br><span class="line">magic_break: enabled=1</span><br><span class="line">port_e9_hack: enabled=0</span><br><span class="line">private_colormap: enabled=0</span><br><span class="line">clock: sync=none, time0=local, rtc_sync=0</span><br><span class="line"><span class="meta"># </span><span class="language-bash">no cmosimage</span></span><br><span class="line">log: -</span><br><span class="line">logprefix: %t%e%d</span><br><span class="line">debug: action=ignore</span><br><span class="line">info: action=report</span><br><span class="line">error: action=report</span><br><span class="line">panic: action=ask</span><br><span class="line">keyboard: type=mf, serial_delay=250, paste_delay=100000, user_shortcut=none</span><br><span class="line">mouse: type=ps2, enabled=false, toggle=ctrl+mbutton</span><br><span class="line">speaker: enabled=true, mode=system</span><br><span class="line">parport1: enabled=true, file=none</span><br><span class="line">parport2: enabled=false</span><br><span class="line">com1: enabled=true, mode=null</span><br><span class="line">com2: enabled=false</span><br><span class="line">com3: enabled=false</span><br><span class="line">com4: enabled=false</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将boot.bin写入到主引导扇区</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd if=boot.bin of=master.img bs=512 count=1 conv=notrunc</span><br></pre></td></tr></table></figure>
+
+<h1 id="bochs中运行"><a href="#bochs中运行" class="headerlink" title="bochs中运行"></a>bochs中运行</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bochs -q -f bochsrc</span><br></pre></td></tr></table></figure>
+
+<p>若bochs中显示出一个<code>H</code>，则表明配置环境成功，下一节，我们将对刚刚那个<code>boot.asm</code>进行代码讲解</p>
 
       
     </div>
@@ -503,7 +538,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://www.shicoder.top/posts/1523335757.html" title="go-redis应用">http://www.shicoder.top/posts/1523335757.html</a>
+    <a href="http://www.shicoder.top/posts/543605244.html" title="操作系统实现-开发环境配置">http://www.shicoder.top/posts/543605244.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -545,8 +580,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/posts/3707414788.html" rel="next" title="redis持久化">
-                <i class="fa fa-chevron-left"></i> redis持久化
+              <a href="/posts/2449255119.html" rel="next" title="集群聊天服务器六">
+                <i class="fa fa-chevron-left"></i> 集群聊天服务器六
               </a>
             
           </div>
@@ -555,8 +590,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/posts/3205092403.html" rel="prev" title="集群聊天服务器一">
-                集群聊天服务器一 <i class="fa fa-chevron-right"></i>
+              <a href="/posts/2733103160.html" rel="prev" title="操作系统实现-boot.asm">
+                操作系统实现-boot.asm <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -650,8 +685,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -670,7 +714,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -681,7 +725,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -738,6 +782,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">环境配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-1"><span class="nav-number">2.</span> <span class="nav-text">环境配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#VSCode%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">VSCode远程连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#boot-asm"><span class="nav-number">4.</span> <span class="nav-text">boot.asm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#bochs%E4%B8%AD%E8%BF%90%E8%A1%8C"><span class="nav-number">5.</span> <span class="nav-text">bochs中运行</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
