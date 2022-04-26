@@ -3,15 +3,15 @@
   <entry>
     <title>关于我自己</title>
     <url>/posts/404665547.html</url>
-    <content><![CDATA[<p>这里先自我介绍下：</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这里先自我介绍下：</p>
 <p>本人是一名在读的机械研三学生，转行到计算机，准备2022年7月入职字节，有想转行的同学可以加我QQ(153604363)，大家可以一起学习啦</p>
 <span id="more"></span>
 
 <h1 id="为什么做这个博客"><a href="#为什么做这个博客" class="headerlink" title="为什么做这个博客"></a>为什么做这个博客</h1><p>这个博客主要记录自己的后端学习记录和一些刷题记录，同时可能会写一些自己的心得感悟，也为自己后面学习有一个知识点仓库，因此可能博客的内容不那么专业，更多的是以我这个水平的同学之间参考</p>
 <p>如果大家觉得博客内容还可以的，也希望可以帮忙转发给朋友啦。</p>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>日记杂事</category>
@@ -22,12 +22,122 @@
       </tags>
   </entry>
   <entry>
-    <title>操作系统实现-startbooting</title>
+    <title>操作系统实现-boot.asm实现</title>
     <url>/posts/3107354293.html</url>
-    <content><![CDATA[<p>这一次我们进入操作系统实现的真实编码， 首先我们都知道操作系统开机之后，都会进入boot，那我们就打印一句话把</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这一次我们进入操作系统实现的真实编码， 这一次主要是完善对boot.asm文件的全部实现，开始吧。。。</p>
 <span id="more"></span>
 
-<h1 id="实模式下的print"><a href="#实模式下的print" class="headerlink" title="实模式下的print"></a>实模式下的print</h1><p>在我们平时编写c语言时候，可以直接使用</p>
+<p>首先我们先来理一下boot.asm需要干什么</p>
+<ul>
+<li>打印出<code>Booting System...</code></li>
+<li>实现磁盘读写</li>
+<li>将后续的<code>loader.asm</code>所在的区域读入到<code>0x1000</code>处，然后跳转进入<code>loader.asm</code>程序</li>
+<li>开始执行<code>loader.asm</code>程序（这一节我们下次实现）</li>
+</ul>
+<h1 id="实模式下的print"><a href="#实模式下的print" class="headerlink" title="实模式下的print"></a>实模式下的print</h1><p>在我们平时编写c语言时候，可以直接使用，但是在boot.asm中，完全就没有可以用库函数，因此为了在开始打印处start boot，我们需要自己实现print</p>
+<p>先来看下代码把</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mov si, booting</span><br><span class="line">call print</span><br><span class="line"></span><br><span class="line">print:</span><br><span class="line">    mov ah, 0x0e</span><br><span class="line">.next:</span><br><span class="line">    mov al, [si]</span><br><span class="line">    cmp al, 0</span><br><span class="line">    jz .done</span><br><span class="line">    int 0x10</span><br><span class="line">    inc si</span><br><span class="line">    jmp .next</span><br><span class="line">.done:</span><br><span class="line">    ret</span><br><span class="line">booting:</span><br><span class="line">    db &quot;Booting System...&quot;, 10, 13, 0; \n\r</span><br></pre></td></tr></table></figure>
+
+<p>这段程序主要使用使用BIOS的<code>int 10h</code>来实现一个<code>print</code>功能，<code>al</code>寄存器存储要显示的字符串</p>
+<h1 id="磁盘读写"><a href="#磁盘读写" class="headerlink" title="磁盘读写"></a>磁盘读写</h1><p>因为<code>boot.asm</code>在主引导扇区，磁盘内存太小，不能在<code>boot.asm</code>中实现<code>loader.asm</code>的功能，因此我们将<code>loader.asm</code>保存在磁盘的一个地方，在<code>boot.asm</code>中利用磁盘读的方式，将代码读入到内存的一个区域，然后跳转到那个地方</p>
+<p>先来看下磁盘读的功能实现</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">; 函数参数</span><br><span class="line">; edi 将磁盘内容读到哪里</span><br><span class="line">; ecx 从磁盘哪一个扇区开始 </span><br><span class="line">; bl 要读多少个扇区</span><br><span class="line">read_disk:</span><br><span class="line">    ; 设置读写扇区的数量</span><br><span class="line">    ; 0x1f2 是硬盘控制端口，表示读写扇区的数量</span><br><span class="line">    mov dx, 0x1f2</span><br><span class="line">    mov al, bl</span><br><span class="line">    ; 写端口用OUT指令 将al的值写入到dx端口</span><br><span class="line">    out dx, al</span><br><span class="line"></span><br><span class="line">    inc dx; 0x1f3 起始扇区前8位端口</span><br><span class="line">    ; 因为ecx为起始扇区 </span><br><span class="line">    ; ecx中的cl就是0-7位</span><br><span class="line">    mov al, cl; 起始扇区前8位</span><br><span class="line">    out dx, al</span><br><span class="line"></span><br><span class="line">    inc dx; 0x1f4 起始扇区中8位端口</span><br><span class="line">    shr ecx, 8 ;右移8位</span><br><span class="line">    mov al, cl; 起始扇区中8位</span><br><span class="line">    out dx, al</span><br><span class="line"></span><br><span class="line">    inc dx; 0x1f5 起始扇区高8位端口</span><br><span class="line">    shr ecx, 8 ;右移8位</span><br><span class="line">    mov al, cl; 起始扇区高8位</span><br><span class="line">    out dx, al</span><br><span class="line"></span><br><span class="line">    inc dx ;0x1f6</span><br><span class="line">    shr ecx, 8</span><br><span class="line">    and cl, 0b1111 ;将高4位置为0，对应起始扇区的24-27位</span><br><span class="line">    mov al,0b1110_0000 ;第4位为0，表示主盘，第6位为1，表示LBA，5-7位必须为1</span><br><span class="line">    ; 将al和cl合二为一，放在al中</span><br><span class="line">    or al, cl</span><br><span class="line">    out dx, al</span><br><span class="line"></span><br><span class="line">    inc dx ;0x1f7</span><br><span class="line">    mov al, 0x20 ;表示读硬盘</span><br><span class="line">    out dx, al</span><br><span class="line"></span><br><span class="line">    xor ecx, ecx ;清空ecx</span><br><span class="line">    mov cl, bl ;得到写扇区的数量</span><br><span class="line"></span><br><span class="line">    ; loop指令会检查ecx是否为0 cl在ecx里面</span><br><span class="line">    .read:</span><br><span class="line">        push cx ;保存下，因为函数里面使用了</span><br><span class="line">        call .waits ;等待数据准备完毕</span><br><span class="line">        call .reads ;读取一个扇区</span><br><span class="line">        pop cx ;恢复</span><br><span class="line">        loop .read</span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line">    .waits:</span><br><span class="line">        mov dx, 0x1f7 ;读0x1f7端口</span><br><span class="line">        .check:</span><br><span class="line">            in al, dx ;将dx端口的值放入al中</span><br><span class="line">            jmp $+2 ;直接跳转到下一行 其实什么都没做，就是为了延迟一下</span><br><span class="line">            jmp $+2</span><br><span class="line">            jmp $+2</span><br><span class="line"></span><br><span class="line">            and al, 0b1000_1000 ;获得al的第3位和第7位</span><br><span class="line">            cmp al, 0b0000_1000 ;测试是否第7位为0，第3位为1 硬盘不繁忙，数据准备完毕</span><br><span class="line">            jnz .check ;数据没准备好</span><br><span class="line">        ret</span><br><span class="line"></span><br><span class="line">    .reads:</span><br><span class="line">        mov dx, 0x1f0 ;用于读写数据</span><br><span class="line">        mov cx, 256 ;一个扇区256字节</span><br><span class="line">        ; loop指定会检查ecx cx在ecx里面</span><br><span class="line">        .readw:</span><br><span class="line">            in ax, dx</span><br><span class="line">            jmp $+2 ;直接跳转到下一行 其实什么都没做，就是为了延迟一下</span><br><span class="line">            jmp $+2</span><br><span class="line">            jmp $+2</span><br><span class="line"></span><br><span class="line">            ; edi表示读取的目标内存</span><br><span class="line">            mov [edi], ax</span><br><span class="line">            ; 为什么要+2</span><br><span class="line">            add edi, 2</span><br><span class="line">            loop .readw</span><br><span class="line">        ret</span><br></pre></td></tr></table></figure>
+
+<p>下面是磁盘的相关端口</p>
+<table>
+<thead>
+<tr>
+<th>Primary 通道</th>
+<th>Secondary 通道</th>
+<th>in 操作</th>
+<th>out 操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0x1F0</td>
+<td>0x170</td>
+<td>Data</td>
+<td>Data</td>
+</tr>
+<tr>
+<td>0x1F1</td>
+<td>0x171</td>
+<td>Error</td>
+<td>Features</td>
+</tr>
+<tr>
+<td>0x1F2</td>
+<td>0x172</td>
+<td>Sector count</td>
+<td>Sector count</td>
+</tr>
+<tr>
+<td>0x1F3</td>
+<td>0x173</td>
+<td>LBA low</td>
+<td>LBA low</td>
+</tr>
+<tr>
+<td>0x1F4</td>
+<td>0x174</td>
+<td>LBA mid</td>
+<td>LBA mid</td>
+</tr>
+<tr>
+<td>0x1F5</td>
+<td>0x175</td>
+<td>LBA high</td>
+<td>LBA high</td>
+</tr>
+<tr>
+<td>0x1F6</td>
+<td>0x176</td>
+<td>Device</td>
+<td>Device</td>
+</tr>
+<tr>
+<td>0x1F7</td>
+<td>0x177</td>
+<td>Status</td>
+<td>Command</td>
+</tr>
+</tbody></table>
+<ul>
+<li>0x1F0：16bit 端口，用于读写数据</li>
+<li>0x1F1：检测前一个指令的错误</li>
+<li>0x1F2：读写扇区的数量</li>
+<li>0x1F3：起始扇区的 0 ~ 7 位</li>
+<li>0x1F4：起始扇区的 8 ~ 15 位</li>
+<li>0x1F5：起始扇区的 16 ~ 23 位</li>
+<li>0x1F6:<ul>
+<li>0 ~ 3：起始扇区的 24 ~ 27 位</li>
+<li>4: 0 主盘, 1 从片</li>
+<li>6: 0 CHS, 1 LBA</li>
+<li>5 ~ 7：固定为1</li>
+</ul>
+</li>
+<li>0x1F7: out<ul>
+<li>0xEC: 识别硬盘</li>
+<li>0x20: 读硬盘</li>
+<li>0x30: 写硬盘</li>
+</ul>
+</li>
+<li>0x1F7: in &#x2F; 8bit<ul>
+<li>0 ERR</li>
+<li>3 DRQ 数据准备完毕</li>
+<li>7 BSY 硬盘繁忙</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>注意上面的out和in指令</p>
+<p>读端口用IN指令，写端口用OUT指令</p>
+<p>out a，b 将b的值写入到a端口</p>
+<p>in   a，b 将b端口的值读到a中</p>
+</blockquote>
 ]]></content>
       <categories>
         <category>操作系统</category>
@@ -38,9 +148,12 @@
       </tags>
   </entry>
   <entry>
-    <title>操作系统实现-boot.asm</title>
+    <title>操作系统实现-简单热身</title>
     <url>/posts/2733103160.html</url>
-    <content><![CDATA[<p>这次对上次的boot.asm进行代码讲解，也可以对汇编的相关理论进行补充</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这次对上次的boot.asm进行代码讲解，也可以对汇编的相关理论进行补充</p>
 <span id="more"></span>
 
 <h1 id="boot-asm"><a href="#boot-asm" class="headerlink" title="boot.asm"></a><code>boot.asm</code></h1><p>主引导扇区位于硬盘的0柱面0磁头1扇区处，首先BIOS加电后，就会将主引导程序加载进来，然后执行</p>
@@ -228,10 +341,13 @@
   <entry>
     <title>操作系统实现-开发环境配置</title>
     <url>/posts/543605244.html</url>
-    <content><![CDATA[<p>这一次我们开始自己实现一个简单的操作系统，当然自己也是在看别人的视频进行学习，希望自己能从这个实验中学习到操作系统相关的知识</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这一次我们开始自己实现一个简单的操作系统，当然自己也是在看别人的视频进行学习，希望自己能从这个实验中学习到操作系统相关的知识</p>
 <span id="more"></span>
 
-<h1 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h1><h1 id="环境配置-1"><a href="#环境配置-1" class="headerlink" title="环境配置"></a>环境配置</h1><ul>
+<h1 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h1><ul>
 <li>VMware</li>
 <li>ArchLinux</li>
 <li>VSCode</li>
@@ -278,7 +394,10 @@
   <entry>
     <title>集群聊天服务器六</title>
     <url>/posts/2449255119.html</url>
-    <content><![CDATA[<p>对于前面单台服务器而言，几千的客户端压力基本没有什么影响，但当客户端达到上万的时候，就可能会遇到一些问题，因此我准备采用<code>nginx+redis</code>的方式进行负载均衡，主要思路如下：</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>对于前面单台服务器而言，几千的客户端压力基本没有什么影响，但当客户端达到上万的时候，就可能会遇到一些问题，因此我准备采用<code>nginx+redis</code>的方式进行负载均衡，主要思路如下：</p>
 <span id="more"></span>
 
 <ol>
@@ -312,7 +431,10 @@
   <entry>
     <title>集群聊天服务器五</title>
     <url>/posts/2548392652.html</url>
-    <content><![CDATA[<p>本章主要实现客户端的需求</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>本章主要实现客户端的需求</p>
 <span id="more"></span>
 
 <p>客户端主要的流程为：<br>客户端分 2 个线程，一个<code>main</code>线程，一个子线程，主线程主要负责接受用户的数据并传输给服务器以及从服务器接受数据，子线程主要是接受其他人聊天的数据。通过一个<code>switch</code>来接受用户的输入：</p>
@@ -342,7 +464,10 @@
   <entry>
     <title>集群聊天服务器四</title>
     <url>/posts/2315714697.html</url>
-    <content><![CDATA[<p>本章我们实现群组创建、添加群组、群组聊天等功能，首先我们先看下和群组相关的表结构</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>本章我们实现群组创建、添加群组、群组聊天等功能，首先我们先看下和群组相关的表结构</p>
 <span id="more"></span>
 
 <p><strong>allgroup表</strong></p>
@@ -374,7 +499,10 @@
   <entry>
     <title>集群聊天服务器三</title>
     <url>/posts/3335875735.html</url>
-    <content><![CDATA[<p>本篇文章主要实现了聊天服务器中一对一聊天和添加好友功能</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>本篇文章主要实现了聊天服务器中一对一聊天和添加好友功能</p>
 <span id="more"></span>
 
 <h1 id="一对一聊天"><a href="#一对一聊天" class="headerlink" title="一对一聊天"></a>一对一聊天</h1><p>以下是聊天对应的<code>json</code>字符串格式</p>
@@ -440,7 +568,10 @@
   <entry>
     <title>集群聊天服务器二</title>
     <url>/posts/2223635098.html</url>
-    <content><![CDATA[<p>本次主要是对<code>Chatserver</code>和<code>Chatservice</code>进行代码实现</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>本次主要是对<code>Chatserver</code>和<code>Chatservice</code>进行代码实现</p>
 <span id="more"></span>
 
 <h1 id="ChatServer"><a href="#ChatServer" class="headerlink" title="ChatServer"></a><code>ChatServer</code></h1><p>首先我们利用<code>muduo</code>库建立一个<code>ChatServer</code>类，<code>muduo</code>库的讲解我会在后面再写一个项目来深入分析</p>
@@ -515,7 +646,10 @@
   <entry>
     <title>集群聊天服务器一</title>
     <url>/posts/3205092403.html</url>
-    <content><![CDATA[<p>本系列主要是利用C++开发一个集群聊天服务器项目，同时代码也会同步更新到<a href="https://github.com/shilinlun/ChatServer">github</a>上面<br>本项目目标为如下几点:</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>本系列主要是利用C++开发一个集群聊天服务器项目，同时代码也会同步更新到<a href="https://github.com/shilinlun/ChatServer">github</a>上面<br>本项目目标为如下几点:</p>
 <span id="more"></span>
 
 <ol>
@@ -538,7 +672,10 @@
   <entry>
     <title>redis持久化</title>
     <url>/posts/3707414788.html</url>
-    <content><![CDATA[<p>本次主要是对redis中著名的持久化策略进行代码层面描述，主要包括RDB持久化和AOF持久化</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>本次主要是对redis中著名的持久化策略进行代码层面描述，主要包括RDB持久化和AOF持久化</p>
 <span id="more"></span>
 
 <p>因为AOF文件的更新频率比RDB高，所以如果服务器开启AOF持久化，redis优先使用AOF文件还原，只有当AOF持久化关闭，才使用RDB文件进行还原</p>
@@ -615,9 +752,6 @@
 
 <p>AOF重写的原理，其实是直接读取当前的数据库的值，最后使用一条写语句就可以实现AOF重写</p>
 <p>而且AOF重写是放在后台子进程执行，这样可以避免效率太低，但是使用子进程执行重写方式，则在重写过程中，父进程还会执行新的写命令，因此这段事件的命令也要被记录下来，最后再次同步给子进程</p>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>redis</category>
@@ -630,7 +764,10 @@
   <entry>
     <title>redis数据库</title>
     <url>/posts/641130346.html</url>
-    <content><![CDATA[<p>这一次主要是接着redis服务器接着进行代码讲解，因为redis服务器中包含大量的数据库，因为redis也对每个数据库设计了结构体</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这一次主要是接着redis服务器接着进行代码讲解，因为redis服务器中包含大量的数据库，因为redis也对每个数据库设计了结构体</p>
 <span id="more"></span>
 
 <h1 id="redis数据库"><a href="#redis数据库" class="headerlink" title="redis数据库"></a>redis数据库</h1><p>在上面<code>redisServer</code>中，有一个数组redisDb *db，这个数组中就是存放的是该服务器所有的数据库，<code>redisDb</code>就是数据库字段，<code>redisServer</code>中的dbnum就是该数组的大小</p>
@@ -668,7 +805,10 @@
   <entry>
     <title>redis服务器</title>
     <url>/posts/641130346.html</url>
-    <content><![CDATA[<p>这一次主要讲下redis中服务器这个结构体相关代码，主要从是代码层面进行讲解</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这一次主要讲下redis中服务器这个结构体相关代码，主要从是代码层面进行讲解</p>
 <span id="more"></span>
 
 <h1 id="redis服务器"><a href="#redis服务器" class="headerlink" title="redis服务器"></a>redis服务器</h1><p>redis服务器结构体主要代码在<code>redis.h/redisServer</code>，下面给出该结构体源码，可以看到源码中对该结构体定义很长，这一节我们一点点分析，当然有些地方可能我也理解不到位hhh</p>
@@ -786,9 +926,6 @@
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * 事件调度函数</span></span><br><span class="line"><span class="comment"> * 处理所有已到达的时间事件，以及所有已就绪的文件事件。</span></span><br><span class="line"><span class="comment"> * 如果不传入特殊 flags 的话，那么函数睡眠直到文件事件就绪，</span></span><br><span class="line"><span class="comment"> * 或者下个时间事件到达（如果有的话）。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 如果 flags 为 0 ，那么函数不作动作，直接返回。</span></span><br><span class="line"><span class="comment"> * 如果 flags 包含 AE_ALL_EVENTS ，所有类型的事件都会被处理。</span></span><br><span class="line"><span class="comment"> * 如果 flags 包含 AE_FILE_EVENTS ，那么处理文件事件。</span></span><br><span class="line"><span class="comment"> * 如果 flags 包含 AE_TIME_EVENTS ，那么处理时间事件。</span></span><br><span class="line"><span class="comment"> * 如果 flags 包含 AE_DONT_WAIT ， 那么函数在处理完所有不许阻塞的事件之后，即刻返回。</span></span><br><span class="line"><span class="comment"> * 函数的返回值为已处理事件的数量</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">aeProcessEvents</span><span class="params">(aeEventLoop *eventLoop, <span class="type">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> processed = <span class="number">0</span>, numevents;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Nothing to do? return ASAP */</span></span><br><span class="line">    <span class="keyword">if</span> (!(flags &amp; AE_TIME_EVENTS) &amp;&amp; !(flags &amp; AE_FILE_EVENTS)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Note that we want call select() even if there are no</span></span><br><span class="line"><span class="comment">     * file events to process as long as we want to process time</span></span><br><span class="line"><span class="comment">     * events, in order to sleep until the next time event is ready</span></span><br><span class="line"><span class="comment">     * to fire. */</span></span><br><span class="line">    <span class="keyword">if</span> (eventLoop-&gt;maxfd != <span class="number">-1</span> ||</span><br><span class="line">        ((flags &amp; AE_TIME_EVENTS) &amp;&amp; !(flags &amp; AE_DONT_WAIT))) &#123;</span><br><span class="line">        <span class="type">int</span> j;</span><br><span class="line">        aeTimeEvent *shortest = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="keyword">struct</span> <span class="title class_">timeval</span> tv, *tvp;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取最近的时间事件</span></span><br><span class="line">        <span class="keyword">if</span> (flags &amp; AE_TIME_EVENTS &amp;&amp; !(flags &amp; AE_DONT_WAIT))</span><br><span class="line">            shortest = <span class="built_in">aeSearchNearestTimer</span>(eventLoop);</span><br><span class="line">        <span class="keyword">if</span> (shortest) &#123;</span><br><span class="line">            <span class="comment">// 如果时间事件存在的话</span></span><br><span class="line">            <span class="comment">// 那么根据最近可执行时间事件和现在时间的时间差来决定文件事件的阻塞时间</span></span><br><span class="line">            <span class="type">long</span> now_sec, now_ms;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 计算距今最近的时间事件还要多久才能达到</span></span><br><span class="line">            <span class="comment">// 并将该时间距保存在 tv 结构中</span></span><br><span class="line">            <span class="built_in">aeGetTime</span>(&amp;now_sec, &amp;now_ms);</span><br><span class="line">            tvp = &amp;tv;</span><br><span class="line">            tvp-&gt;tv_sec = shortest-&gt;when_sec - now_sec;</span><br><span class="line">            <span class="keyword">if</span> (shortest-&gt;when_ms &lt; now_ms) &#123;</span><br><span class="line">                tvp-&gt;tv_usec = ((shortest-&gt;when_ms+<span class="number">1000</span>) - now_ms)*<span class="number">1000</span>;</span><br><span class="line">                tvp-&gt;tv_sec --;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                tvp-&gt;tv_usec = (shortest-&gt;when_ms - now_ms)*<span class="number">1000</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 时间差小于 0 ，说明事件已经可以执行了，将秒和毫秒设为 0 （不阻塞）</span></span><br><span class="line">            <span class="keyword">if</span> (tvp-&gt;tv_sec &lt; <span class="number">0</span>) tvp-&gt;tv_sec = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> (tvp-&gt;tv_usec &lt; <span class="number">0</span>) tvp-&gt;tv_usec = <span class="number">0</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 执行到这一步，说明没有时间事件</span></span><br><span class="line">            <span class="comment">// 那么根据 AE_DONT_WAIT 是否设置来决定是否阻塞，以及阻塞的时间长度</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">/* If we have to check for events but need to return</span></span><br><span class="line"><span class="comment">             * ASAP because of AE_DONT_WAIT we need to set the timeout</span></span><br><span class="line"><span class="comment">             * to zero */</span></span><br><span class="line">            <span class="keyword">if</span> (flags &amp; AE_DONT_WAIT) &#123;</span><br><span class="line">                <span class="comment">// 设置文件事件不阻塞</span></span><br><span class="line">                tv.tv_sec = tv.tv_usec = <span class="number">0</span>;</span><br><span class="line">                tvp = &amp;tv;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">/* Otherwise we can block */</span></span><br><span class="line">                <span class="comment">// 文件事件可以阻塞直到有事件到达为止</span></span><br><span class="line">                tvp = <span class="literal">NULL</span>; <span class="comment">/* wait forever */</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 处理文件事件，阻塞时间由 tvp 决定</span></span><br><span class="line">        numevents = <span class="built_in">aeApiPoll</span>(eventLoop, tvp);</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; numevents; j++) &#123;</span><br><span class="line">            <span class="comment">// 从已就绪数组中获取事件</span></span><br><span class="line">            aeFileEvent *fe = &amp;eventLoop-&gt;events[eventLoop-&gt;fired[j].fd];</span><br><span class="line"></span><br><span class="line">            <span class="type">int</span> mask = eventLoop-&gt;fired[j].mask;</span><br><span class="line">            <span class="type">int</span> fd = eventLoop-&gt;fired[j].fd;</span><br><span class="line">            <span class="type">int</span> rfired = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">           <span class="comment">/* note the fe-&gt;mask &amp; mask &amp; ... code: maybe an already processed</span></span><br><span class="line"><span class="comment">             * event removed an element that fired and we still didn&#x27;t</span></span><br><span class="line"><span class="comment">             * processed, so we check if the event is still valid. */</span></span><br><span class="line">            <span class="comment">// 读事件</span></span><br><span class="line">            <span class="keyword">if</span> (fe-&gt;mask &amp; mask &amp; AE_READABLE) &#123;</span><br><span class="line">                <span class="comment">// rfired 确保读/写事件只能执行其中一个</span></span><br><span class="line">                rfired = <span class="number">1</span>;</span><br><span class="line">                fe-&gt;<span class="built_in">rfileProc</span>(eventLoop,fd,fe-&gt;clientData,mask);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 写事件</span></span><br><span class="line">            <span class="keyword">if</span> (fe-&gt;mask &amp; mask &amp; AE_WRITABLE) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!rfired || fe-&gt;wfileProc != fe-&gt;rfileProc)</span><br><span class="line">                    fe-&gt;<span class="built_in">wfileProc</span>(eventLoop,fd,fe-&gt;clientData,mask);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            processed++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行时间事件</span></span><br><span class="line">    <span class="keyword">if</span> (flags &amp; AE_TIME_EVENTS)</span><br><span class="line">        processed += <span class="built_in">processTimeEvents</span>(eventLoop);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> processed;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 获取可执行事件</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">aeApiPoll</span><span class="params">(aeEventLoop *eventLoop, <span class="keyword">struct</span> timeval *tvp)</span> </span>&#123;</span><br><span class="line">    aeApiState *state = eventLoop-&gt;apidata;</span><br><span class="line">    <span class="type">int</span> retval, numevents = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 等待时间</span></span><br><span class="line">    retval = <span class="built_in">epoll_wait</span>(state-&gt;epfd,state-&gt;events,eventLoop-&gt;setsize,</span><br><span class="line">            tvp ? (tvp-&gt;tv_sec*<span class="number">1000</span> + tvp-&gt;tv_usec/<span class="number">1000</span>) : <span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 有至少一个事件就绪？</span></span><br><span class="line">    <span class="keyword">if</span> (retval &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">int</span> j;</span><br><span class="line">        <span class="comment">// 为已就绪事件设置相应的模式</span></span><br><span class="line">        <span class="comment">// 并加入到 eventLoop 的 fired 数组中</span></span><br><span class="line">        numevents = retval;</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; numevents; j++) &#123;</span><br><span class="line">            <span class="type">int</span> mask = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">struct</span> <span class="title class_">epoll_event</span> *e = state-&gt;events+j;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (e-&gt;events &amp; EPOLLIN) mask |= AE_READABLE;</span><br><span class="line">            <span class="keyword">if</span> (e-&gt;events &amp; EPOLLOUT) mask |= AE_WRITABLE;</span><br><span class="line">            <span class="keyword">if</span> (e-&gt;events &amp; EPOLLERR) mask |= AE_WRITABLE;</span><br><span class="line">            <span class="keyword">if</span> (e-&gt;events &amp; EPOLLHUP) mask |= AE_WRITABLE;</span><br><span class="line">            </span><br><span class="line">            eventLoop-&gt;fired[j].fd = e-&gt;data.fd;</span><br><span class="line">            eventLoop-&gt;fired[j].mask = mask;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 返回已就绪事件个数</span></span><br><span class="line">    <span class="keyword">return</span> numevents;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>由上面代码可知，因为文件事件是随机出现的，如果等待并处理完一次文件事件之后，仍未有任何时间事件到达，那么服务器将再次等待并处理文件事件。随着文件事件的不断执行，时间会逐渐向时间事件所设置的到达时间逼近，并最终来到到达时间，这时服务器就可以开始处理到达的时间事件了。</p>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>redis</category>
@@ -801,7 +938,10 @@
   <entry>
     <title>redis数据结构附录</title>
     <url>/posts/968120137.html</url>
-    <content><![CDATA[<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本次对上一次的数据结构知识进行补充，主要有redis数据结构的相关应用场景和内存相关知识</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本次对上一次的数据结构知识进行补充，主要有redis数据结构的相关应用场景和内存相关知识</p>
 <span id="more"></span>
 
 <h1 id="引用计数-内存"><a href="#引用计数-内存" class="headerlink" title="引用计数-内存"></a>引用计数-内存</h1><p>redis中的对象回收机制是采用引用计数的方式，首先我们可以通过redis对象结构体代码可知</p>
@@ -817,9 +957,6 @@
 <p>redis&gt; OBJECT REFCOUNT A<br>(integer) 2</p>
 </blockquote>
 <h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><p>redis由于有多种数据结构，每种数据结构都有着不同的api和对应的时间复杂度，因此在实际工作或者项目开发中，应该面对不同场景选择不同的redis数据结构，因为自己在字节工作，会常常使用redis，下面根据自己平时的一些总结进行阐述，这个部分会持续更新</p>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>redis</category>
@@ -832,7 +969,10 @@
   <entry>
     <title>redis数据结构</title>
     <url>/posts/2882215823.html</url>
-    <content><![CDATA[<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0</p>
 <span id="more"></span>
 
 <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="简单动态字符串SDS"><a href="#简单动态字符串SDS" class="headerlink" title="简单动态字符串SDS"></a>简单动态字符串SDS</h2><p><code>sds</code>数据结构位于<code>sds.h/sdshdr</code></p>
@@ -1009,9 +1149,6 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
 
 <p>上述两个宏定义分别与redis的配置文件中<code>zset-max-ziplist-entries</code>和<code>zset-max-ziplist-value</code>对应</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这一次把redis的数据结构和对应的对象实现方式大致说了一遍，最重要的还是什么时候使用什么数据结构，并且各种数据结构一些命令的时间复杂度等，这些其实还没有进行阐述，后面会单独开一章进行讲解，因为在实际项目中，我们要针对不同场景对数据结构进行选取</p>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>redis</category>
@@ -1024,7 +1161,10 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
   <entry>
     <title>muduo源码分析之回调模块</title>
     <url>/posts/3047269001.html</url>
-    <content><![CDATA[<p>这次我们主要来说说<code>muduo</code>库中大量使用的回调机制。<code>muduo</code>主要使用的是利用<code>Callback</code>的方式来实现回调，首先我们在自己的<code>EchoServer</code>构造函数中有这样几行代码</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这次我们主要来说说<code>muduo</code>库中大量使用的回调机制。<code>muduo</code>主要使用的是利用<code>Callback</code>的方式来实现回调，首先我们在自己的<code>EchoServer</code>构造函数中有这样几行代码</p>
 <span id="more"></span>
 
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">EchoServer</span>(EventLoop *loop,</span><br><span class="line">        <span class="type">const</span> InetAddress &amp;addr, </span><br><span class="line">        <span class="type">const</span> std::string &amp;name)</span><br><span class="line">    : <span class="built_in">server_</span>(loop, addr, name)</span><br><span class="line">    , <span class="built_in">loop_</span>(loop)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 注册回调函数</span></span><br><span class="line">    server_.<span class="built_in">setConnectionCallback</span>(</span><br><span class="line">        std::<span class="built_in">bind</span>(&amp;EchoServer::onConnection, <span class="keyword">this</span>, std::placeholders::_1)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    server_.<span class="built_in">setMessageCallback</span>(</span><br><span class="line">        std::<span class="built_in">bind</span>(&amp;EchoServer::onMessage, <span class="keyword">this</span>,</span><br><span class="line">            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置合适的loop线程数量 loopthread</span></span><br><span class="line">    server_.<span class="built_in">setThreadNum</span>(<span class="number">3</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1036,9 +1176,6 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
 <p>当已经建立的连接有新消息来的时候，<code>conn-&gt;setMessageCallback(messageCallback_);</code>这一行代码表示我们给这个<code>conn</code>设置了一个有消息来的时候回调，我们去看下<code>TcpConnection</code>中对<code>setMessageCallback</code>是怎么处理的</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">setConnectionCallback</span><span class="params">(<span class="type">const</span> ConnectionCallback&amp; cb)</span></span></span><br><span class="line"><span class="function"></span>&#123; connectionCallback_ = cb; &#125;</span><br></pre></td></tr></table></figure>
 <p>所以有消息来的时候，就会执行我们所设置的回调函数<code>onMessage</code>。到这里我么就基本知道新连接的建立和旧连接的消息到来应该做什么，下一章我们说一下消息之间发送的<code>Buffer</code>类。</p>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>后端开发</category>
@@ -1051,7 +1188,10 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
   <entry>
     <title>muduo源码分析之TcpServer模块</title>
     <url>/posts/335272509.html</url>
-    <content><![CDATA[<p>这次我们开始<code>muduo</code>源代码的实际编写，首先我们知道<code>muduo</code>是<code>LT</code>模式，<code>Reactor</code>模式，下图为<code>Reactor</code>模式的流程图[来源1]</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这次我们开始<code>muduo</code>源代码的实际编写，首先我们知道<code>muduo</code>是<code>LT</code>模式，<code>Reactor</code>模式，下图为<code>Reactor</code>模式的流程图[来源1]</p>
 <span id="more"></span>
 
 <p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220220154310731.png" alt="image-20220220154310731"></p>
@@ -1073,9 +1213,6 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
 <p>这里是不是就实现了<code>accept</code>函数，至此当用户建立一个新的连接时候，<code>Acceptor</code>就会得到一个<code>connfd</code>和其对应的<code>peerAddr</code>返回给<code>mainloop</code>，这时候我们在注意到<code>TcpServer</code>构造函数中有这样一行代码<code>acceptor_-&gt;setNewConnectionCallback(std::bind(&amp;TcpServer::newConnection, this,std::placeholders::_1, std::placeholders::_2));</code>我们给<code>acceptor_</code>设置了一个<code>newConnectionCallback_</code>，于是由上面的代码就可以知道，<code>if (newConnectionCallback_)</code>为真，就会执行这个回调函数，于是就会执行<code>TcpServer::newConnection</code>，我们去看下这个函数是在干嘛。</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">TcpServer::newConnection</span><span class="params">(<span class="type">int</span> sockfd, <span class="type">const</span> InetAddress &amp;peerAddr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 轮询算法选择一个subloop来管理对应的这个新连接</span></span><br><span class="line">    EventLoop *ioLoop = threadPool_-&gt;<span class="built_in">getNextLoop</span>(); </span><br><span class="line">    <span class="type">char</span> buf[<span class="number">64</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="built_in">snprintf</span>(buf, <span class="keyword">sizeof</span> buf, <span class="string">&quot;-%s#%d&quot;</span>, ipPort_.<span class="built_in">c_str</span>(), nextConnId_);</span><br><span class="line">    ++nextConnId_;</span><br><span class="line">    std::string connName = name_ + buf;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">LOG_INFO</span>(<span class="string">&quot;TcpServer::newConnection [%s] - new connection [%s] from %s \n&quot;</span>,</span><br><span class="line">        name_.<span class="built_in">c_str</span>(), connName.<span class="built_in">c_str</span>(), peerAddr.<span class="built_in">toIpPort</span>().<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通过sockfd获取其绑定的本地ip和端口</span></span><br><span class="line">    sockaddr_in local;</span><br><span class="line">    ::<span class="built_in">bzero</span>(&amp;local, <span class="keyword">sizeof</span> local);</span><br><span class="line">    <span class="type">socklen_t</span> addrlen = <span class="keyword">sizeof</span> local;</span><br><span class="line">    <span class="keyword">if</span> (::<span class="built_in">getsockname</span>(sockfd, (sockaddr*)&amp;local, &amp;addrlen) &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">LOG_ERROR</span>(<span class="string">&quot;sockets::getLocalAddr&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">InetAddress <span class="title">localAddr</span><span class="params">(local)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据连接成功的sockfd,创建TcpConnection</span></span><br><span class="line">    <span class="function">TcpConnectionPtr <span class="title">conn</span><span class="params">(<span class="keyword">new</span> TcpConnection(</span></span></span><br><span class="line"><span class="params"><span class="function">                            ioLoop,</span></span></span><br><span class="line"><span class="params"><span class="function">                            connName,</span></span></span><br><span class="line"><span class="params"><span class="function">                            sockfd,   <span class="comment">// Socket Channel</span></span></span></span><br><span class="line"><span class="params"><span class="function">                            localAddr,</span></span></span><br><span class="line"><span class="params"><span class="function">                            peerAddr))</span></span>;</span><br><span class="line">    connections_[connName] = conn;</span><br><span class="line">	<span class="comment">// 下面的回调时用户设置给TcpServer，TcpServer又设置给TcpConnection，TcpConnetion又设置给Channel，Channel又设置给Poller，Poller通知channel调用这个回调</span></span><br><span class="line">    conn-&gt;<span class="built_in">setConnectionCallback</span>(connectionCallback_);</span><br><span class="line">    conn-&gt;<span class="built_in">setMessageCallback</span>(messageCallback_);</span><br><span class="line">    conn-&gt;<span class="built_in">setWriteCompleteCallback</span>(writeCompleteCallback_);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置了如何关闭连接的回调</span></span><br><span class="line">    conn-&gt;<span class="built_in">setCloseCallback</span>(</span><br><span class="line">        std::<span class="built_in">bind</span>(&amp;TcpServer::removeConnection, <span class="keyword">this</span>, std::placeholders::_1)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 直接调用connectEstablished</span></span><br><span class="line">    ioLoop-&gt;<span class="built_in">runInLoop</span>(std::<span class="built_in">bind</span>(&amp;TcpConnection::connectEstablished, conn));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里就比较长了，我先说下大概他干了啥事情：首先通过轮询找到下一个<code>subloop</code>，然后将刚刚返回的<code>connfd</code>和对应的<code>peerAddr</code>以及<code>localAddr</code>构造为一个<code>TcpConnection</code>给<code>subloop</code>，然后给这个<code>conn</code>设置了一系列的回调函数，比如读回调，写回调，断开回调等等。下一章我们来说下上面的代码最后几行在干嘛。</p>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>后端开发</category>
@@ -1088,7 +1225,10 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
   <entry>
     <title>muduo源码分析之muduo简单运用</title>
     <url>/posts/713527548.html</url>
-    <content><![CDATA[<p>今天不先实现<code>muduo</code>项目，我们先来看下<code>muduo</code>库的基本使用，只有了解了如何用，才能在写代码的时候知道自己写的找个函数是干嘛的，实际上是怎么使用的这个函数。首先说简单点，就是定义一个<code>Server</code>，设置两个回调函数</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>今天不先实现<code>muduo</code>项目，我们先来看下<code>muduo</code>库的基本使用，只有了解了如何用，才能在写代码的时候知道自己写的找个函数是干嘛的，实际上是怎么使用的这个函数。首先说简单点，就是定义一个<code>Server</code>，设置两个回调函数</p>
 <span id="more"></span>
 
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 回调连接相关的事件</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">onConnection</span><span class="params">(<span class="type">const</span> TcpConnectionPtr &amp;conn)</span></span>;</span><br><span class="line"><span class="comment">// 回调读写事件</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">onMessage</span><span class="params">(<span class="type">const</span> TcpConnectionPtr &amp;conn, Buffer *buffer, Timestamp time)</span></span>;</span><br></pre></td></tr></table></figure>
@@ -1110,7 +1250,10 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
   <entry>
     <title>muduo源码分析之Buffer</title>
     <url>/posts/620043534.html</url>
-    <content><![CDATA[<p>这一次我们来分析下<code>muduo</code>中<code>Buffer</code>的作用，我们知道，当我们客户端向服务器发送数据时候，服务器就会读取我们发送的数据，然后进行一系列处理，然后再发送到其他地方，在这里我们想象一下最简单的<code>EchoServer</code>服务器，客户端建立一个连接，以后服务器和客户端之间的通信都是通过这个<code>connfd</code>发送和接受数据，于是每一个<code>connfd</code>都应该有一个自己<code>buffer</code>，当我们发送数据太快，服务器发送的太慢，则服务器会将待发送的数据这个<code>buffer</code>中，所以这就是这个类的作用。我们先看下<code>buffer</code>的结构是什么：</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>这一次我们来分析下<code>muduo</code>中<code>Buffer</code>的作用，我们知道，当我们客户端向服务器发送数据时候，服务器就会读取我们发送的数据，然后进行一系列处理，然后再发送到其他地方，在这里我们想象一下最简单的<code>EchoServer</code>服务器，客户端建立一个连接，以后服务器和客户端之间的通信都是通过这个<code>connfd</code>发送和接受数据，于是每一个<code>connfd</code>都应该有一个自己<code>buffer</code>，当我们发送数据太快，服务器发送的太慢，则服务器会将待发送的数据这个<code>buffer</code>中，所以这就是这个类的作用。我们先看下<code>buffer</code>的结构是什么：</p>
 <p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/d2466fdf-c322-417a-9a80-2900d415d81d.png" alt="buffer1"></p>
 <p>我们这里主要针对<code>connfd</code>这个对应的<code>channel</code>进行分析，首先上图是<code>buffer</code>的初始状态，前面<code>8</code>个字节中表示该<code>buffer</code>的大小，初始大小为<code>1024</code>。当客户端发送数据给服务器，同时若服务器接受缓慢，则会向<code>buffer</code>中开始写数据，则<code>writerIndex_</code>会向右移动，假如此时移动到如下形式：</p>
 <p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/10505139-a325-4e85-bea0-b845fad0fd51.png" alt="buffer2"></p>
@@ -1130,9 +1273,6 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
 <p>当向<code>connfd</code>发送数据的时候就比较简单了，直接将可读的数据发送给出去就行</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 通过fd发送数据</span></span><br><span class="line"><span class="function"><span class="type">ssize_t</span> <span class="title">Buffer::writeFd</span><span class="params">(<span class="type">int</span> fd, <span class="type">int</span>* saveErrno)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">ssize_t</span> n = ::<span class="built_in">write</span>(fd, <span class="built_in">peek</span>(), <span class="built_in">readableBytes</span>());</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        *saveErrno = errno;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>后端开发</category>
@@ -1145,7 +1285,10 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
   <entry>
     <title>muduo项目介绍</title>
     <url>/posts/3331102393.html</url>
-    <content><![CDATA[<p>在上一个<a href="https://juejin.cn/post/6950230361594920996"><strong>集群聊天服务器</strong></a>项目中，我使用了<code>muduo</code>作为网络库，然后主要实现了业务逻辑等，所以为了深入网络库的代码和实现，我跟着一位老师的代码去实现了<code>muduo</code>库的基本原理和作用，当然只是实现了主体的代码，有些细节便没有深究，以下是自己的目标:</p>
+    <content><![CDATA[<blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<p>在上一个<a href="https://juejin.cn/post/6950230361594920996"><strong>集群聊天服务器</strong></a>项目中，我使用了<code>muduo</code>作为网络库，然后主要实现了业务逻辑等，所以为了深入网络库的代码和实现，我跟着一位老师的代码去实现了<code>muduo</code>库的基本原理和作用，当然只是实现了主体的代码，有些细节便没有深究，以下是自己的目标:</p>
 <ol>
 <li>从开源C++ muduo网络库，学习优秀的代码设计</li>
 <li>掌握基于事件驱动和事件回调的epoll+线程池面向对象编程</li>
@@ -1153,9 +1296,6 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
 <li>重写muduo核心组件，去依赖boost，用C++11重构</li>
 <li>测试代码是否成功</li>
 </ol>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>后端开发</category>

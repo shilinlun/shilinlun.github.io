@@ -96,12 +96,12 @@
 
 
 
-<meta name="description" content="引言从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0">
+<meta name="description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  引言从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis数据结构">
 <meta property="og:url" content="http://www.shicoder.top/posts/2882215823.html">
 <meta property="og:site_name" content="一个爱代码的Coder">
-<meta property="og:description" content="引言从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0">
+<meta property="og:description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  引言从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0">
 <meta property="og:locale">
 <meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220331111939637.png">
 <meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220331112050968.png">
@@ -128,7 +128,7 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png">
 <meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649404859400.png">
 <meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649404927877.png">
 <meta property="article:published_time" content="2022-03-30T09:15:18.000Z">
-<meta property="article:modified_time" content="2022-04-19T03:08:58.278Z">
+<meta property="article:modified_time" content="2022-04-26T09:14:46.569Z">
 <meta property="article:author" content="shilinkun">
 <meta property="article:tag" content="导航">
 <meta property="article:tag" content="分享">
@@ -476,7 +476,10 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png">
       
 
       
-        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0</p>
+        <blockquote>
+<p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
+</blockquote>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>从本次开始，对Redis设计与实现进行阅读及相关读书笔记的记录。Redis版本为3.0</p>
 <span id="more"></span>
 
 <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="简单动态字符串SDS"><a href="#简单动态字符串SDS" class="headerlink" title="简单动态字符串SDS"></a>简单动态字符串SDS</h2><p><code>sds</code>数据结构位于<code>sds.h/sdshdr</code></p>
@@ -653,9 +656,6 @@ https://smypicture.oss-cn-beijing.aliyuncs.com/img/1649402910210.png"
 
 <p>上述两个宏定义分别与redis的配置文件中<code>zset-max-ziplist-entries</code>和<code>zset-max-ziplist-value</code>对应</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这一次把redis的数据结构和对应的对象实现方式大致说了一遍，最重要的还是什么时候使用什么数据结构，并且各种数据结构一些命令的时间复杂度等，这些其实还没有进行阐述，后面会单独开一章进行讲解，因为在实际项目中，我们要针对不同场景对数据结构进行选取</p>
-<blockquote>
-<p>自己的网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>欢迎加群聊天 452380935</p>
-</blockquote>
 
       
     </div>
