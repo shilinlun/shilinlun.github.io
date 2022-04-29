@@ -6,7 +6,7 @@
   <link href="http://www.shicoder.top/atom.xml" rel="self"/>
   
   <link href="http://www.shicoder.top/"/>
-  <updated>2022-04-28T13:26:25.530Z</updated>
+  <updated>2022-04-29T07:00:43.913Z</updated>
   <id>http://www.shicoder.top/</id>
   
   <author>
@@ -15,6 +15,58 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>win11下任务栏软件白色</title>
+    <link href="http://www.shicoder.top/posts/3813897216.html"/>
+    <id>http://www.shicoder.top/posts/3813897216.html</id>
+    <published>2022-04-29T01:57:42.000Z</published>
+    <updated>2022-04-29T07:00:43.913Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p></blockquote><p>批处理内容（管理员身份运行）：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">taskkill /f /im explorer.exe </span><br><span class="line">attrib -h -s -r &quot;%userprofile%\AppData\Local\IconCache.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\IconCache.db&quot; </span><br><span class="line">attrib /s /d -h -s -r &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\*&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_32.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_96.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_102.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_256.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_1024.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_idx.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_sr.db&quot;  </span><br><span class="line">echo y|reg delete &quot;HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify&quot; /v IconStreams </span><br><span class="line">echo y|reg delete &quot;HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify&quot; /v PastIconsStream </span><br><span class="line">start explorer </span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;博客网址：&lt;a href=&quot;http://www.shicoder.top/&quot;&gt;www.shicoder.top&lt;/a&gt;&lt;br&gt;微信：18223081347&lt;br&gt;欢迎加群聊天 ：452380935&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;批处理</summary>
+      
+    
+    
+    
+    <category term="其他" scheme="http://www.shicoder.top/categories/%E5%85%B6%E4%BB%96/"/>
+    
+    
+    <category term="导航" scheme="http://www.shicoder.top/tags/%E5%AF%BC%E8%88%AA/"/>
+    
+    <category term="分享" scheme="http://www.shicoder.top/tags/%E5%88%86%E4%BA%AB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>mongodb初探</title>
+    <link href="http://www.shicoder.top/posts/1579451164.html"/>
+    <id>http://www.shicoder.top/posts/1579451164.html</id>
+    <published>2022-04-29T01:50:01.000Z</published>
+    <updated>2022-04-29T01:50:01.763Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p></blockquote>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;博客网址：&lt;a href=&quot;http://www.shicoder.top/&quot;&gt;www.shicoder.top&lt;/a&gt;&lt;br&gt;微信：18223081347&lt;br&gt;欢迎加群聊天 ：452380935&lt;/p&gt;
+&lt;/blockquote&gt;
+</summary>
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>操作系统实现-loader</title>
@@ -472,64 +524,6 @@
 &lt;p&gt;博客网址：&lt;a href=&quot;http://www.shicoder.top/&quot;&gt;www.shicoder.top&lt;/a&gt;&lt;br&gt;微信：18223081347&lt;br&gt;欢迎加群聊天 ：452380935&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;今天不先实现&lt;code&gt;muduo&lt;/code&gt;项目，我们先来看下&lt;code&gt;muduo&lt;/code&gt;库的基本使用，只有了解了如何用，才能在写代码的时候知道自己写的找个函数是干嘛的，实际上是怎么使用的这个函数。首先说简单点，就是定义一个&lt;code&gt;Server&lt;/code&gt;，设置两个回调函数&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="后端开发" scheme="http://www.shicoder.top/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/"/>
-    
-    
-    <category term="导航" scheme="http://www.shicoder.top/tags/%E5%AF%BC%E8%88%AA/"/>
-    
-    <category term="分享" scheme="http://www.shicoder.top/tags/%E5%88%86%E4%BA%AB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>muduo源码分析之Buffer</title>
-    <link href="http://www.shicoder.top/posts/620043534.html"/>
-    <id>http://www.shicoder.top/posts/620043534.html</id>
-    <published>2022-02-20T07:37:47.000Z</published>
-    <updated>2022-04-26T09:14:13.094Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p></blockquote><p>这一次我们来分析下<code>muduo</code>中<code>Buffer</code>的作用，我们知道，当我们客户端向服务器发送数据时候，服务器就会读取我们发送的数据，然后进行一系列处理，然后再发送到其他地方，在这里我们想象一下最简单的<code>EchoServer</code>服务器，客户端建立一个连接，以后服务器和客户端之间的通信都是通过这个<code>connfd</code>发送和接受数据，于是每一个<code>connfd</code>都应该有一个自己<code>buffer</code>，当我们发送数据太快，服务器发送的太慢，则服务器会将待发送的数据这个<code>buffer</code>中，所以这就是这个类的作用。我们先看下<code>buffer</code>的结构是什么：</p><p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/d2466fdf-c322-417a-9a80-2900d415d81d.png" alt="buffer1"></p><p>我们这里主要针对<code>connfd</code>这个对应的<code>channel</code>进行分析，首先上图是<code>buffer</code>的初始状态，前面<code>8</code>个字节中表示该<code>buffer</code>的大小，初始大小为<code>1024</code>。当客户端发送数据给服务器，同时若服务器接受缓慢，则会向<code>buffer</code>中开始写数据，则<code>writerIndex_</code>会向右移动，假如此时移动到如下形式：</p><p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/10505139-a325-4e85-bea0-b845fad0fd51.png" alt="buffer2"></p><p>则此时缓冲区可以读的数据为<code>writerIndex_ - readerIndex_</code>，可以写的数据为<code>buffer_.size() - writerIndex_</code>。这时候当服务器有多余资源进行读操作，就可以去缓冲区读数据了，假如这时候的状态为如下：</p><p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/c2fc3414-189b-41bf-b649-1c0ba90763e1.png" alt="buffer3"></p><p>这就是常见的几个状态，下面我们去看几个重点的函数：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">// 把onMessage函数上报的buffer内容转为string</span></span><br><span class="line">  <span class="function">std::string <span class="title">retrieveAllAsString</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">retrieveAsString</span>(<span class="built_in">readableBytes</span>()); <span class="comment">// 应用可读取数据的长度</span></span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 可读的数据 就是存放的是即发送的数据</span></span><br><span class="line">  <span class="function"><span class="type">size_t</span> <span class="title">readableBytes</span><span class="params">()</span> <span class="type">const</span> </span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> writerIndex_ - readerIndex_;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function">std::string <span class="title">retrieveAsString</span><span class="params">(<span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line"><span class="comment">// 从可读数据开始位置，长度为len的char构造为一个string</span></span><br><span class="line">      <span class="function">std::string <span class="title">result</span><span class="params">(peek(), len)</span></span>;</span><br><span class="line">      <span class="built_in">retrieve</span>(len); <span class="comment">// 上面一句把缓冲区中可读的数据，已经读取出来，这里肯定要对缓冲区进行复位操作</span></span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 将缓冲区len的长度进行复位</span></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">retrieve</span><span class="params">(<span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line"><span class="comment">// 表示还没有读完数据</span></span><br><span class="line">      <span class="keyword">if</span> (len &lt; <span class="built_in">readableBytes</span>())</span><br><span class="line">      &#123;</span><br><span class="line">          readerIndex_ += len; <span class="comment">// 应用只读取了刻度缓冲区数据的一部分，就是len，还剩下readerIndex_ += len -&gt; writerIndex_</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span>   <span class="comment">// len == readableBytes()</span></span><br><span class="line">      &#123;</span><br><span class="line">          <span class="built_in">retrieveAll</span>();</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure><p>以上是基本的操作，下面的2个函数很重要，一个是向<code>connfd</code>写数据，一个是读数据，对于一个<code>TcpConnection</code>而言，当有数据来的时候，回去调用<code>handleRead</code>回调函数。我们知道<code>muduo</code>设置的每次读取的大小为<code>65536</code>字节，当缓冲区可写的数据大小大于<code>65536</code>，就会直接将读到的数据写入到缓冲区中，但当缓冲区的可写数据大小小于<code>65536</code>的时候，就会将剩余数据先写到一个额外的空间</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">ssize_t</span> <span class="title">Buffer::readFd</span><span class="params">(<span class="type">int</span> fd, <span class="type">int</span>* saveErrno)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">char</span> extrabuf[<span class="number">65536</span>] = &#123;<span class="number">0</span>&#125;; <span class="comment">// 栈上的内存空间  64K</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">iovec</span> vec[<span class="number">2</span>];</span><br><span class="line">    </span><br><span class="line"><span class="comment">// 这是buffer可写的数据</span></span><br><span class="line">    <span class="type">const</span> <span class="type">size_t</span> writable = <span class="built_in">writableBytes</span>(); </span><br><span class="line">    vec[<span class="number">0</span>].iov_base = <span class="built_in">begin</span>() + writerIndex_;</span><br><span class="line">    vec[<span class="number">0</span>].iov_len = writable;</span><br><span class="line"></span><br><span class="line">    vec[<span class="number">1</span>].iov_base = extrabuf;</span><br><span class="line">    vec[<span class="number">1</span>].iov_len = <span class="keyword">sizeof</span> extrabuf;</span><br><span class="line">    </span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> iovcnt = (writable &lt; <span class="keyword">sizeof</span> extrabuf) ? <span class="number">2</span> : <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 去百度下readv</span></span><br><span class="line">    <span class="type">const</span> <span class="type">ssize_t</span> n = ::<span class="built_in">readv</span>(fd, vec, iovcnt);</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        *saveErrno = errno;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (n &lt;= writable) <span class="comment">// Buffer的可写缓冲区已经够存储读出来的数据了</span></span><br><span class="line">    &#123;</span><br><span class="line">        writerIndex_ += n;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">// extrabuf 也写了数据</span></span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    &#123;</span><br><span class="line">        writerIndex_ = buffer_.<span class="built_in">size</span>();</span><br><span class="line">        <span class="built_in">append</span>(extrabuf, n - writable);  <span class="comment">// writerIndex_开始写 n - writable大小的数据</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>这里巧妙的使用了一个<code>readv</code>函数，可以通过按照大小自动写到不同的地方。其中当<code>extrabuf</code>也写了数据，就会调用<code>append</code>函数。</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 要写len长度的数据</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ensureWriteableBytes</span><span class="params">(<span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">writableBytes</span>() &lt; len)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">makeSpace</span>(len); <span class="comment">// 扩容函数</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 向缓冲区添加数据</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">append</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *data, <span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">ensureWriteableBytes</span>(len);</span><br><span class="line">    std::<span class="built_in">copy</span>(data, data+len, <span class="built_in">beginWrite</span>());</span><br><span class="line">    writerIndex_ += len;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>注意到有一个<code>makeSpace</code>函数，其中有一个注意点，比如当如下这种状态的时候：</p><p><img src="https://smypicture.oss-cn-beijing.aliyuncs.com/img/c2fc3414-189b-41bf-b649-1c0ba90763e1.png" alt="buffer4"></p><p>此时<code>readerIndex_</code>前面有一部分其实已经被读完了，是空的数据，所以<code>makeSpace</code>函数考虑了这一点，采用内存重组的方式，将<code>readerIndex_</code>向前移动到<code>kCheapPrepend</code>处，然后就可以让空余的内存挨在一起</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">makeSpace</span><span class="params">(<span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">writableBytes</span>() + <span class="built_in">prependableBytes</span>() &lt; len + kCheapPrepend)</span><br><span class="line">    &#123;</span><br><span class="line">        buffer_.<span class="built_in">resize</span>(writerIndex_ + len);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">size_t</span> readalbe = <span class="built_in">readableBytes</span>();</span><br><span class="line">        std::<span class="built_in">copy</span>(<span class="built_in">begin</span>() + readerIndex_, </span><br><span class="line">                <span class="built_in">begin</span>() + writerIndex_,</span><br><span class="line">                <span class="built_in">begin</span>() + kCheapPrepend);</span><br><span class="line">        readerIndex_ = kCheapPrepend;</span><br><span class="line">        writerIndex_ = readerIndex_ + readalbe;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>当向<code>connfd</code>发送数据的时候就比较简单了，直接将可读的数据发送给出去就行</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过fd发送数据</span></span><br><span class="line"><span class="function"><span class="type">ssize_t</span> <span class="title">Buffer::writeFd</span><span class="params">(<span class="type">int</span> fd, <span class="type">int</span>* saveErrno)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">ssize_t</span> n = ::<span class="built_in">write</span>(fd, <span class="built_in">peek</span>(), <span class="built_in">readableBytes</span>());</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        *saveErrno = errno;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;博客网址：&lt;a href=&quot;http://www.shicoder.top/&quot;&gt;www.shicoder.top&lt;/a&gt;&lt;br&gt;微信：18223081347&lt;br&gt;欢迎加群聊天 ：452380935&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;这一次</summary>
-      
-    
-    
-    
-    <category term="后端开发" scheme="http://www.shicoder.top/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/"/>
-    
-    
-    <category term="导航" scheme="http://www.shicoder.top/tags/%E5%AF%BC%E8%88%AA/"/>
-    
-    <category term="分享" scheme="http://www.shicoder.top/tags/%E5%88%86%E4%BA%AB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>muduo项目介绍</title>
-    <link href="http://www.shicoder.top/posts/3331102393.html"/>
-    <id>http://www.shicoder.top/posts/3331102393.html</id>
-    <published>2022-02-20T07:26:15.000Z</published>
-    <updated>2022-04-26T09:14:08.429Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p></blockquote><p>在上一个<a href="https://juejin.cn/post/6950230361594920996"><strong>集群聊天服务器</strong></a>项目中，我使用了<code>muduo</code>作为网络库，然后主要实现了业务逻辑等，所以为了深入网络库的代码和实现，我跟着一位老师的代码去实现了<code>muduo</code>库的基本原理和作用，当然只是实现了主体的代码，有些细节便没有深究，以下是自己的目标:</p><ol><li>从开源C++ muduo网络库，学习优秀的代码设计</li><li>掌握基于事件驱动和事件回调的epoll+线程池面向对象编程</li><li>实现<code>TcpServer</code>、<code>TcpConnection</code>、<code>Poller</code>、<code>Chanel</code>等重要部分</li><li>重写muduo核心组件，去依赖boost，用C++11重构</li><li>测试代码是否成功</li></ol>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;博客网址：&lt;a href=&quot;http://www.shicoder.top/&quot;&gt;www.shicoder.top&lt;/a&gt;&lt;br&gt;微信：18223081347&lt;br&gt;欢迎加群聊天 ：452380935&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;在上一</summary>
-      
     
     
     
