@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://www.shicoder.top/posts/3813897216.html</loc>
+    <loc>http://www.shicoder.top/posts/1579451164.html</loc>
     
     <lastmod>2022-04-29</lastmod>
     
@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>http://www.shicoder.top/posts/1579451164.html</loc>
+    <loc>http://www.shicoder.top/posts/3813897216.html</loc>
     
     <lastmod>2022-04-29</lastmod>
     
@@ -275,6 +275,13 @@
   </url>
   
   <url>
+    <loc>http://www.shicoder.top/categories/MongoDB/</loc>
+    <lastmod>2022-04-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://www.shicoder.top/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/</loc>
     <lastmod>2022-04-29</lastmod>
     <changefreq>weekly</changefreq>
@@ -282,14 +289,14 @@
   </url>
   
   <url>
-    <loc>http://www.shicoder.top/categories/redis/</loc>
+    <loc>http://www.shicoder.top/categories/%E5%85%B6%E4%BB%96/</loc>
     <lastmod>2022-04-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://www.shicoder.top/categories/%E5%85%B6%E4%BB%96/</loc>
+    <loc>http://www.shicoder.top/categories/redis/</loc>
     <lastmod>2022-04-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

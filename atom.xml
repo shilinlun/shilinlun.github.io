@@ -6,7 +6,7 @@
   <link href="http://www.shicoder.top/atom.xml" rel="self"/>
   
   <link href="http://www.shicoder.top/"/>
-  <updated>2022-04-29T09:12:49.628Z</updated>
+  <updated>2022-04-29T11:45:14.000Z</updated>
   <id>http://www.shicoder.top/</id>
   
   <author>
@@ -21,18 +21,15 @@
     <link href="http://www.shicoder.top/posts/3813897216.html"/>
     <id>http://www.shicoder.top/posts/3813897216.html</id>
     <published>2022-04-29T01:57:42.000Z</published>
-    <updated>2022-04-29T09:12:49.628Z</updated>
+    <updated>2022-04-29T11:45:14.000Z</updated>
     
-    <content type="html"><![CDATA[<blockquote><p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p></blockquote><p>批处理内容（管理员身份运行）：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">taskkill /f /im explorer.exe </span><br><span class="line">attrib -h -s -r &quot;%userprofile%\AppData\Local\IconCache.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\IconCache.db&quot; </span><br><span class="line">attrib /s /d -h -s -r &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\*&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_32.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_96.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_102.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_256.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_1024.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_idx.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_sr.db&quot;  </span><br><span class="line">echo y|reg delete &quot;HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify&quot; /v IconStreams </span><br><span class="line">echo y|reg delete &quot;HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify&quot; /v PastIconsStream </span><br><span class="line">start explorer </span><br></pre></td></tr></table></figure>]]></content>
+    <content type="html"><![CDATA[<blockquote><p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p></blockquote><p>批处理内容（管理员身份运行）：</p><span id="more"></span><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">taskkill /f /im explorer.exe </span><br><span class="line">attrib -h -s -r &quot;%userprofile%\AppData\Local\IconCache.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\IconCache.db&quot; </span><br><span class="line">attrib /s /d -h -s -r &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\*&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_32.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_96.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_102.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_256.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_1024.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_idx.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_sr.db&quot;  </span><br><span class="line">echo y|reg delete &quot;HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify&quot; /v IconStreams </span><br><span class="line">echo y|reg delete &quot;HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify&quot; /v PastIconsStream </span><br><span class="line">start explorer </span><br></pre></td></tr></table></figure>]]></content>
     
     
-      
-      
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;博客网址：&lt;a href=&quot;http://www.shicoder.top/&quot;&gt;www.shicoder.top&lt;/a&gt;&lt;br&gt;微信：18223081347&lt;br&gt;欢迎加群聊天 ：452380935&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;批处理</summary>
-      
+&lt;p&gt;批处理内容（管理员身份运行）：&lt;/p&gt;</summary>
     
     
     
@@ -50,21 +47,24 @@
     <link href="http://www.shicoder.top/posts/1579451164.html"/>
     <id>http://www.shicoder.top/posts/1579451164.html</id>
     <published>2022-04-29T01:50:01.000Z</published>
-    <updated>2022-04-29T09:12:49.625Z</updated>
+    <updated>2022-04-29T11:51:40.929Z</updated>
     
-    <content type="html"><![CDATA[<blockquote><p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p></blockquote>]]></content>
+    <content type="html"><![CDATA[<blockquote><p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p></blockquote><p>这次我们开始我们的MongoDB之旅吧</p><span id="more"></span>]]></content>
     
     
-      
-      
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;博客网址：&lt;a href=&quot;http://www.shicoder.top/&quot;&gt;www.shicoder.top&lt;/a&gt;&lt;br&gt;微信：18223081347&lt;br&gt;欢迎加群聊天 ：452380935&lt;/p&gt;
 &lt;/blockquote&gt;
-</summary>
-      
+&lt;p&gt;这次我们开始我们的MongoDB之旅吧&lt;/p&gt;</summary>
     
     
     
+    <category term="MongoDB" scheme="http://www.shicoder.top/categories/MongoDB/"/>
+    
+    
+    <category term="导航" scheme="http://www.shicoder.top/tags/%E5%AF%BC%E8%88%AA/"/>
+    
+    <category term="分享" scheme="http://www.shicoder.top/tags/%E5%88%86%E4%BA%AB/"/>
     
   </entry>
   
