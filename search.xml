@@ -48,7 +48,25 @@
 <p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
 </blockquote>
 <p>这次我们开始我们的MongoDB之旅吧</p>
-<span id="more"></span>]]></content>
+<span id="more"></span>
+
+<h1 id="启动和连接MongoDB"><a href="#启动和连接MongoDB" class="headerlink" title="启动和连接MongoDB"></a>启动和连接MongoDB</h1><ul>
+<li>启动，一般以配置文件启动</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt; </span><span class="language-bash">mongod.exe -f ./mongod.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>最简单的一个config文件就是配置一个存储数据的路径和日志文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">storage:</span><br><span class="line">    #The directory where the mongod instance stores its data.Default Value is &quot;\data\db&quot; on Windows.</span><br><span class="line">    dbPath: D:\mongodb-win32-x86_64-2008plus-ssl-4.0.12\data</span><br><span class="line"></span><br><span class="line">systemLog:</span><br><span class="line">    destination: file</span><br><span class="line">    path: D:\mongodb-win32-x86_64-2008plus-ssl-4.0.12\logs\mongodb.log</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>连接，采用mongo</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt; </span><span class="language-bash">mongo.exe</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置为服务</li>
+</ul>
+]]></content>
       <categories>
         <category>MongoDB</category>
       </categories>
