@@ -96,24 +96,21 @@
 
 
 
-<meta name="description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  这一次我们来分析下muduo中Buffer的作用，我们知道，当我们客户端向服务器发送数据时候，服务器就会读取我们发送的数据，然后进行一系列处理，然后再发送到其他地方，在这里我们想象一下最简单的EchoServer服务器，客户端建立一个连接，以后服务器和客户端之间的通信都是通过这个connf">
+<meta name="description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  这个分栏我们开始学习PWN，当然PWN也是自己的兴趣爱好，所以可能博客更新较慢，不好意思啦 前置知识每个函数都有自己的栈帧，栈底用ebp，栈顶用esp，还有一个eip，表示即将执行的指令的地址，下面是栈的图示，是从高地址向低地址增长  函数的栈帧包括  函数的返回地址和参数 本地变量 调用">
 <meta property="og:type" content="article">
-<meta property="og:title" content="muduo源码分析之Buffer">
-<meta property="og:url" content="http://www.shicoder.top/posts/620043534.html">
+<meta property="og:title" content="函数调用栈">
+<meta property="og:url" content="http://www.shicoder.top/posts/3330740389.html">
 <meta property="og:site_name" content="一个爱代码的Coder">
-<meta property="og:description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  这一次我们来分析下muduo中Buffer的作用，我们知道，当我们客户端向服务器发送数据时候，服务器就会读取我们发送的数据，然后进行一系列处理，然后再发送到其他地方，在这里我们想象一下最简单的EchoServer服务器，客户端建立一个连接，以后服务器和客户端之间的通信都是通过这个connf">
+<meta property="og:description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  这个分栏我们开始学习PWN，当然PWN也是自己的兴趣爱好，所以可能博客更新较慢，不好意思啦 前置知识每个函数都有自己的栈帧，栈底用ebp，栈顶用esp，还有一个eip，表示即将执行的指令的地址，下面是栈的图示，是从高地址向低地址增长  函数的栈帧包括  函数的返回地址和参数 本地变量 调用">
 <meta property="og:locale">
-<meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/d2466fdf-c322-417a-9a80-2900d415d81d.png">
-<meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/10505139-a325-4e85-bea0-b845fad0fd51.png">
-<meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/c2fc3414-189b-41bf-b649-1c0ba90763e1.png">
-<meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/c2fc3414-189b-41bf-b649-1c0ba90763e1.png">
-<meta property="article:published_time" content="2022-02-20T07:37:47.000Z">
-<meta property="article:modified_time" content="2022-04-26T09:14:13.094Z">
+<meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220502093832451.png">
+<meta property="article:published_time" content="2022-05-02T01:32:58.000Z">
+<meta property="article:modified_time" content="2022-05-02T08:37:43.007Z">
 <meta property="article:author" content="shilinkun">
 <meta property="article:tag" content="导航">
 <meta property="article:tag" content="分享">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/d2466fdf-c322-417a-9a80-2900d415d81d.png">
+<meta name="twitter:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220502093832451.png">
 
 
 
@@ -143,13 +140,13 @@
 
 
 
-  <link rel="canonical" href="http://www.shicoder.top/posts/620043534.html"/>
+  <link rel="canonical" href="http://www.shicoder.top/posts/3330740389.html"/>
 
 
 
 
 
-  <title>muduo源码分析之Buffer | 一个爱代码的Coder</title>
+  <title>函数调用栈 | 一个爱代码的Coder</title>
   
 
 
@@ -329,7 +326,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.shicoder.top/posts/620043534.html">
+    <link itemprop="mainEntityOfPage" href="http://www.shicoder.top/posts/3330740389.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -346,7 +343,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">muduo源码分析之Buffer</h1>
+          <h1 class="post-title" itemprop="name headline">函数调用栈</h1>
         
 
         <div class="post-meta">
@@ -359,8 +356,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-02-20T15:37:47+08:00">
-                2022-02-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-02T09:32:58+08:00">
+                2022-05-02
               </time>
             
 
@@ -382,8 +379,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
-                    <span itemprop="name">后端开发</span>
+                  <a href="/categories/PWN/" itemprop="url" rel="index">
+                    <span itemprop="name">PWN</span>
                   </a>
                 </span>
 
@@ -400,8 +397,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/posts/620043534.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/posts/620043534.html" itemprop="commentCount"></span>
+                <a href="/posts/3330740389.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/posts/3330740389.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -428,7 +425,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.2k
+                  837
                 </span>
               
 
@@ -444,7 +441,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  4
+                  3
                 </span>
               
             </div>
@@ -468,25 +465,44 @@
         <blockquote>
 <p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
 </blockquote>
-<p>这一次我们来分析下<code>muduo</code>中<code>Buffer</code>的作用，我们知道，当我们客户端向服务器发送数据时候，服务器就会读取我们发送的数据，然后进行一系列处理，然后再发送到其他地方，在这里我们想象一下最简单的<code>EchoServer</code>服务器，客户端建立一个连接，以后服务器和客户端之间的通信都是通过这个<code>connfd</code>发送和接受数据，于是每一个<code>connfd</code>都应该有一个自己<code>buffer</code>，当我们发送数据太快，服务器发送的太慢，则服务器会将待发送的数据这个<code>buffer</code>中，所以这就是这个类的作用。我们先看下<code>buffer</code>的结构是什么：</p>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://smypicture.oss-cn-beijing.aliyuncs.com/img/d2466fdf-c322-417a-9a80-2900d415d81d.png" alt="buffer1"></p>
-<p>我们这里主要针对<code>connfd</code>这个对应的<code>channel</code>进行分析，首先上图是<code>buffer</code>的初始状态，前面<code>8</code>个字节中表示该<code>buffer</code>的大小，初始大小为<code>1024</code>。当客户端发送数据给服务器，同时若服务器接受缓慢，则会向<code>buffer</code>中开始写数据，则<code>writerIndex_</code>会向右移动，假如此时移动到如下形式：</p>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://smypicture.oss-cn-beijing.aliyuncs.com/img/10505139-a325-4e85-bea0-b845fad0fd51.png" alt="buffer2"></p>
-<p>则此时缓冲区可以读的数据为<code>writerIndex_ - readerIndex_</code>，可以写的数据为<code>buffer_.size() - writerIndex_</code>。这时候当服务器有多余资源进行读操作，就可以去缓冲区读数据了，假如这时候的状态为如下：</p>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://smypicture.oss-cn-beijing.aliyuncs.com/img/c2fc3414-189b-41bf-b649-1c0ba90763e1.png" alt="buffer3"></p>
-<p>这就是常见的几个状态，下面我们去看几个重点的函数：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">// 把onMessage函数上报的buffer内容转为string</span></span><br><span class="line">  <span class="function">std::string <span class="title">retrieveAllAsString</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">retrieveAsString</span>(<span class="built_in">readableBytes</span>()); <span class="comment">// 应用可读取数据的长度</span></span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 可读的数据 就是存放的是即发送的数据</span></span><br><span class="line">  <span class="function"><span class="type">size_t</span> <span class="title">readableBytes</span><span class="params">()</span> <span class="type">const</span> </span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> writerIndex_ - readerIndex_;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function">std::string <span class="title">retrieveAsString</span><span class="params">(<span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line"><span class="comment">// 从可读数据开始位置，长度为len的char构造为一个string</span></span><br><span class="line">      <span class="function">std::string <span class="title">result</span><span class="params">(peek(), len)</span></span>;</span><br><span class="line">      <span class="built_in">retrieve</span>(len); <span class="comment">// 上面一句把缓冲区中可读的数据，已经读取出来，这里肯定要对缓冲区进行复位操作</span></span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 将缓冲区len的长度进行复位</span></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">retrieve</span><span class="params">(<span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line"><span class="comment">// 表示还没有读完数据</span></span><br><span class="line">      <span class="keyword">if</span> (len &lt; <span class="built_in">readableBytes</span>())</span><br><span class="line">      &#123;</span><br><span class="line">          readerIndex_ += len; <span class="comment">// 应用只读取了刻度缓冲区数据的一部分，就是len，还剩下readerIndex_ += len -&gt; writerIndex_</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span>   <span class="comment">// len == readableBytes()</span></span><br><span class="line">      &#123;</span><br><span class="line">          <span class="built_in">retrieveAll</span>();</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>以上是基本的操作，下面的2个函数很重要，一个是向<code>connfd</code>写数据，一个是读数据，对于一个<code>TcpConnection</code>而言，当有数据来的时候，回去调用<code>handleRead</code>回调函数。我们知道<code>muduo</code>设置的每次读取的大小为<code>65536</code>字节，当缓冲区可写的数据大小大于<code>65536</code>，就会直接将读到的数据写入到缓冲区中，但当缓冲区的可写数据大小小于<code>65536</code>的时候，就会将剩余数据先写到一个额外的空间</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">ssize_t</span> <span class="title">Buffer::readFd</span><span class="params">(<span class="type">int</span> fd, <span class="type">int</span>* saveErrno)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">char</span> extrabuf[<span class="number">65536</span>] = &#123;<span class="number">0</span>&#125;; <span class="comment">// 栈上的内存空间  64K</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">iovec</span> vec[<span class="number">2</span>];</span><br><span class="line">    </span><br><span class="line">	<span class="comment">// 这是buffer可写的数据</span></span><br><span class="line">    <span class="type">const</span> <span class="type">size_t</span> writable = <span class="built_in">writableBytes</span>(); </span><br><span class="line">    vec[<span class="number">0</span>].iov_base = <span class="built_in">begin</span>() + writerIndex_;</span><br><span class="line">    vec[<span class="number">0</span>].iov_len = writable;</span><br><span class="line"></span><br><span class="line">    vec[<span class="number">1</span>].iov_base = extrabuf;</span><br><span class="line">    vec[<span class="number">1</span>].iov_len = <span class="keyword">sizeof</span> extrabuf;</span><br><span class="line">    </span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> iovcnt = (writable &lt; <span class="keyword">sizeof</span> extrabuf) ? <span class="number">2</span> : <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// 去百度下readv</span></span><br><span class="line">    <span class="type">const</span> <span class="type">ssize_t</span> n = ::<span class="built_in">readv</span>(fd, vec, iovcnt);</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        *saveErrno = errno;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (n &lt;= writable) <span class="comment">// Buffer的可写缓冲区已经够存储读出来的数据了</span></span><br><span class="line">    &#123;</span><br><span class="line">        writerIndex_ += n;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// extrabuf 也写了数据</span></span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    &#123;</span><br><span class="line">        writerIndex_ = buffer_.<span class="built_in">size</span>();</span><br><span class="line">        <span class="built_in">append</span>(extrabuf, n - writable);  <span class="comment">// writerIndex_开始写 n - writable大小的数据</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里巧妙的使用了一个<code>readv</code>函数，可以通过按照大小自动写到不同的地方。其中当<code>extrabuf</code>也写了数据，就会调用<code>append</code>函数。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 要写len长度的数据</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ensureWriteableBytes</span><span class="params">(<span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">writableBytes</span>() &lt; len)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">makeSpace</span>(len); <span class="comment">// 扩容函数</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 向缓冲区添加数据</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">append</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *data, <span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">ensureWriteableBytes</span>(len);</span><br><span class="line">    std::<span class="built_in">copy</span>(data, data+len, <span class="built_in">beginWrite</span>());</span><br><span class="line">    writerIndex_ += len;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意到有一个<code>makeSpace</code>函数，其中有一个注意点，比如当如下这种状态的时候：</p>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://smypicture.oss-cn-beijing.aliyuncs.com/img/c2fc3414-189b-41bf-b649-1c0ba90763e1.png" alt="buffer4"></p>
-<p>此时<code>readerIndex_</code>前面有一部分其实已经被读完了，是空的数据，所以<code>makeSpace</code>函数考虑了这一点，采用内存重组的方式，将<code>readerIndex_</code>向前移动到<code>kCheapPrepend</code>处，然后就可以让空余的内存挨在一起</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">makeSpace</span><span class="params">(<span class="type">size_t</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">writableBytes</span>() + <span class="built_in">prependableBytes</span>() &lt; len + kCheapPrepend)</span><br><span class="line">    &#123;</span><br><span class="line">        buffer_.<span class="built_in">resize</span>(writerIndex_ + len);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">size_t</span> readalbe = <span class="built_in">readableBytes</span>();</span><br><span class="line">        std::<span class="built_in">copy</span>(<span class="built_in">begin</span>() + readerIndex_, </span><br><span class="line">                <span class="built_in">begin</span>() + writerIndex_,</span><br><span class="line">                <span class="built_in">begin</span>() + kCheapPrepend);</span><br><span class="line">        readerIndex_ = kCheapPrepend;</span><br><span class="line">        writerIndex_ = readerIndex_ + readalbe;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个分栏我们开始学习PWN，当然PWN也是自己的兴趣爱好，所以可能博客更新较慢，不好意思啦</p>
+<h1 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h1><p>每个函数都有自己的栈帧，栈底用<code>ebp</code>，栈顶用<code>esp</code>，还有一个<code>eip</code>，表示即将执行的指令的地址，下面是栈的图示，是从高地址向低地址增长</p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220502093832451.png" alt="image-20220502093832451"></p>
+<p>函数的栈帧包括</p>
+<ul>
+<li>函数的返回地址和参数</li>
+<li>本地变量</li>
+<li>调用前后上下文</li>
+</ul>
+<p>因此比如一个<code>main</code>函数执行时候，<code>ebp</code>指向其栈帧底部，然后在函数运行时候随时<code>push</code>和<code>pop</code>，导致其<code>esp</code>不断变化，当要调用子函数<code>func</code>时候，会先<code>push</code>子函数所需要的参数，然后进入<code>func</code>之后，首先<code>push ebp</code>，因为此时的<code>ebp</code>是<code>main</code>函数的，为了在<code>func</code>函数结束后，找到<code>main</code>函数的<code>ebp</code>，所以先保留，然后<code>mov ebp,esp</code>，这时候<code>ebp</code>就会被赋予新的值，这个值就是<code>func</code>函数栈帧的底部，然后就是一些<code>func</code>函数自己的操作，当要使用传进来的参数时候，就去当时在<code>main</code>调用<code>func</code>前<code>push</code>的参数去取，当执行<code>func</code>函数之后，需要返回到<code>main</code>，此时分两种情况</p>
+<ul>
+<li><code>func</code>中没有使用过局部变量，则进入<code>func</code>之后，<code>ebp</code>和<code>esp</code>始终是一样的，所以直接<code>pop ebp</code>，此时<code>ebp</code>中就存放了<code>call</code>调用前，<code>main</code>的<code>ebp</code></li>
+<li><code>func</code>中使用过局部变量，则进入<code>func</code>之后，首先会<code>sub esp，一些空间</code>来给<code>func</code>使用，然后结束时候，使用<code>leave =&gt; mov esp,ebp、pop ebp</code>，先将<code>esp</code>值变为<code>ebp</code>的值，此时两个一样，然后<code>pop ebp</code>之后，<code>ebp</code>中就存放了<code>call</code>调用前，<code>main</code>的<code>ebp</code></li>
+</ul>
+<p>简单的就是如下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">main:</span><br><span class="line">	...</span><br><span class="line">    push arg2</span><br><span class="line">    push arg1</span><br><span class="line">    call func</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">; func函数内没有局部变量</span><br><span class="line">func:</span><br><span class="line">	push ebp</span><br><span class="line">	mov ebp,esp</span><br><span class="line">	将main的栈中的参数放到寄存器中</span><br><span class="line">	一顿操作</span><br><span class="line">	pop ebp</span><br><span class="line">	retn</span><br><span class="line"></span><br><span class="line">; func函数内有局部变量</span><br><span class="line">func:</span><br><span class="line">	push ebp</span><br><span class="line">	mov ebp,esp</span><br><span class="line">	sub esp,0x10(就是一段长度，存放局部变量)</span><br><span class="line">	将main的栈中的参数放到寄存器中</span><br><span class="line">	一顿操作</span><br><span class="line">	leave</span><br><span class="line">	retn</span><br></pre></td></tr></table></figure>
 
-<p>当向<code>connfd</code>发送数据的时候就比较简单了，直接将可读的数据发送给出去就行</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过fd发送数据</span></span><br><span class="line"><span class="function"><span class="type">ssize_t</span> <span class="title">Buffer::writeFd</span><span class="params">(<span class="type">int</span> fd, <span class="type">int</span>* saveErrno)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">ssize_t</span> n = ::<span class="built_in">write</span>(fd, <span class="built_in">peek</span>(), <span class="built_in">readableBytes</span>());</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        *saveErrno = errno;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<ul>
+<li>call    &#x3D;&gt; 等价 push 返回地址，然后eip跳转到sum开头的地方</li>
+<li>leave &#x3D;&gt; 等价 mov esp, ebp 然后 pop ebp</li>
+<li>retn   &#x3D;&gt; 等价 pop eip</li>
+</ul>
+<h1 id="小试牛刀"><a href="#小试牛刀" class="headerlink" title="小试牛刀"></a>小试牛刀</h1><p>以下面的c语言代码进行讲解</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">sum</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="built_in">sum</span>(<span class="number">3</span>,<span class="number">4</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">push    ebp</span><br><span class="line">mov     ebp, esp</span><br><span class="line">push    4</span><br><span class="line">push    3</span><br><span class="line">call    sum</span><br><span class="line">add     esp, 8</span><br><span class="line">mov     eax, 0</span><br><span class="line">leave</span><br><span class="line">retn</span><br><span class="line"></span><br><span class="line">push    ebp</span><br><span class="line">mov     ebp, esp</span><br><span class="line">mov     edx, [ebp+8]</span><br><span class="line">mov     eax, [ebp+0Ch]</span><br><span class="line">add     eax, edx</span><br><span class="line">pop     ebp</span><br><span class="line">retn</span><br></pre></td></tr></table></figure>
+
+<p>下面一段视频就是其过程，可以看下</p>
+<p><video width="100%" height="300" controls>     <source src="https://smypicture.oss-cn-beijing.aliyuncs.com/video/%E6%A0%88%E8%B0%83%E7%94%A8.mp4" type="video/mp4"> </video></p>
+<p>后面还有两段有局部变量的，大家也可以自己推导下。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">sum</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">int</span> c;</span><br><span class="line">	c = a + b;</span><br><span class="line">	<span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="type">int</span> ret;</span><br><span class="line">	ret = <span class="built_in">sum</span>(<span class="number">3</span>,<span class="number">4</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">push    ebp</span><br><span class="line">mov     ebp, esp</span><br><span class="line">sub     esp, 10h</span><br><span class="line">push    4</span><br><span class="line">push    3</span><br><span class="line">call    sum </span><br><span class="line">add     esp, 8</span><br><span class="line">mov     [ebp-4], eax</span><br><span class="line">mov     eax, 0</span><br><span class="line">leave  </span><br><span class="line">retn  </span><br><span class="line"></span><br><span class="line">push    ebp</span><br><span class="line">mov     ebp, esp</span><br><span class="line">sub     esp, 10h</span><br><span class="line">mov     edx, [ebp+8]</span><br><span class="line">mov     eax, [ebp+0Ch]</span><br><span class="line">add     eax, edx</span><br><span class="line">mov     [ebp-4], eax</span><br><span class="line">mov     eax, [ebp-4]</span><br><span class="line">leave</span><br><span class="line">retn</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">sum</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="type">int</span> ret;</span><br><span class="line">	ret = <span class="built_in">sum</span>(<span class="number">3</span>,<span class="number">4</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">push    ebp</span><br><span class="line">mov     ebp, esp</span><br><span class="line">sub     esp, 10h</span><br><span class="line">push    4</span><br><span class="line">push    3</span><br><span class="line">call    sum</span><br><span class="line">add     esp, 8</span><br><span class="line">mov     [ebp-4], eax</span><br><span class="line">mov     eax, 0</span><br><span class="line">leave</span><br><span class="line">retn</span><br><span class="line"></span><br><span class="line">push    ebp</span><br><span class="line">mov     ebp, esp</span><br><span class="line">mov     edx, [ebp+8]</span><br><span class="line">mov     eax, [ebp+0Ch]</span><br><span class="line">add     eax, edx</span><br><span class="line">pop     ebp</span><br><span class="line">retn</span><br></pre></td></tr></table></figure>
 
 
       
@@ -537,7 +553,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://www.shicoder.top/posts/620043534.html" title="muduo源码分析之Buffer">http://www.shicoder.top/posts/620043534.html</a>
+    <a href="http://www.shicoder.top/posts/3330740389.html" title="函数调用栈">http://www.shicoder.top/posts/3330740389.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -579,8 +595,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/posts/3331102393.html" rel="next" title="muduo项目介绍">
-                <i class="fa fa-chevron-left"></i> muduo项目介绍
+              <a href="/posts/3813897216.html" rel="next" title="win11下任务栏软件白色">
+                <i class="fa fa-chevron-left"></i> win11下任务栏软件白色
               </a>
             
           </div>
@@ -588,10 +604,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/posts/713527548.html" rel="prev" title="muduo源码分析之muduo简单运用">
-                muduo源码分析之muduo简单运用 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -684,8 +696,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -772,6 +793,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">前置知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80"><span class="nav-number">2.</span> <span class="nav-text">小试牛刀</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
